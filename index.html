@@ -5,7 +5,6 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Squad Faction Database</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
-  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet" />
   <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
   <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
@@ -25,391 +24,264 @@ const FACTIONS = {
   USA: {
     name: "US Army", abbr: "USA", side: "BLUFOR", type: "Conventional",
     color: "#4a6741", accent: "#c9a227",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [
-        { name: "M939 Truck Transport", count: 1 },
-        { name: "Quad Bike", count: 1 },
-      ],
-      Logistics: [
-        { name: "M939 Truck Logistics", count: 3 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [
-        { name: "UH-60M Black Hawk", count: 2 },
-      ],
+      Transport: [{ name: "M939 Truck Transport", count: 1, seats: 18 },{ name: "Quad Bike", count: 1, seats: 2 }],
+      Logistics: [{ name: "M939 Truck Logistics", count: 3, seats: 3 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "UH-60M Black Hawk", count: 2, seats: 13 }],
       "Light Attack": [
-        { name: "M-ATV M2 CROWS", count: 1 },
-        { name: "M-ATV M240 CROWS", count: 1 },
-        { name: "M-ATV TOW", count: 1 },
-        { name: "RHIB M2A1", count: 1 },
-        { name: "RHIB M240", count: 1 },
+        { name: "M-ATV M2 CROWS", count: 1, seats: 5 },
+        { name: "M-ATV M240 CROWS", count: 1, seats: 5 },
+        { name: "M-ATV TOW", count: 1, seats: 5 },
+        { name: "RHIB M2A1", count: 1, seats: 6 },
+        { name: "RHIB M240", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "M1126 M2 CROWS", count: 1, hp: 1250, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: "~55 (HMG)" },
-        { name: "M1126 M240 CROWS", count: 1, hp: 1250, weapon: "M240 CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: "~35 (GPMG)" },
+        { name: "M1126 M2 CROWS", count: 1, hp: 1250, seats: 11, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "M1126 M240 CROWS", count: 1, hp: 1250, seats: 11, weapon: "M240 CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: 35, rof: 500, dpm: 17500 },
       ],
       IFV: [
-        { name: "M2A3 Bradley", count: 1, hp: 2000, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~46mm (turret ~200mm)", sideArmor: "~20-30mm", dmgPerShot: "~175 (AP) / 1400 (TOW)" },
+        { name: "M2A3 Bradley", count: 1, hp: 2000, seats: 10, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~46mm (turret ~200mm)", sideArmor: "~20-30mm", dmgPerShot: 175, rof: 200, dpm: 35000, atgmDmg: 1400, atgmReload: 25 },
       ],
       MBT: [
-        { name: "M1A2 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M2 .50cal RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (composite)", sideArmor: "~100-200mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "M1A2 Abrams", count: 1, hp: 3000, seats: 4, weapon: "120mm M256 + M2 .50cal RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (composite)", sideArmor: "~100-200mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
       MGS: [
-        { name: "M1128 Stryker MGS", count: 1, hp: 1250, weapon: "105mm M68A2", pen: "800mm (APFSDS)", frontArmor: "~14.5mm (same as Stryker)", sideArmor: "~7mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "M1128 Stryker MGS", count: 1, hp: 1250, seats: 4, weapon: "105mm M68A2", pen: "800mm (APFSDS)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 8000, rof: 6, dpm: 48000 },
       ],
     },
   },
   BAF: {
     name: "British Armed Forces", abbr: "BAF", side: "BLUFOR", type: "Conventional",
     color: "#2d4a2d", accent: "#d4a843",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "MAN HX Transport", count: 1 }],
-      Logistics: [
-        { name: "MAN HX Logistics", count: 3 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "SA330 Puma", count: 2 }],
+      Transport: [{ name: "MAN HX Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "MAN HX Logistics", count: 3, seats: 3 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "SA330 Puma", count: 2, seats: 12 }],
       "Light Attack": [
-        { name: "LPPV M2 Open", count: 1 },
-        { name: "LPPV M2 RWS", count: 1 },
-        { name: "LPPV L7A2 Open", count: 1 },
-        { name: "RHIB M2A1", count: 1 },
+        { name: "LPPV M2 Open", count: 1, seats: 5 },
+        { name: "LPPV M2 RWS", count: 1, seats: 5 },
+        { name: "LPPV L7A2 Open", count: 1, seats: 5 },
+        { name: "RHIB M2A1", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "FV432 M2 Open", count: 1, hp: 1250, weapon: "M2A1 .50cal (open)", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: "~55 (HMG)" },
-        { name: "FV432 RWS", count: 1, hp: 1250, weapon: "L37A2 RWS", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: "~35 (GPMG)" },
-        { name: "FV107 Scimitar", count: 1, hp: 1000, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~12mm", sideArmor: "~6mm", dmgPerShot: "~210 (AP)" },
+        { name: "FV432 M2 Open", count: 1, hp: 1250, seats: 12, weapon: "M2A1 .50cal (open)", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "FV432 RWS", count: 1, hp: 1250, seats: 12, weapon: "L37A2 RWS", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: 35, rof: 500, dpm: 17500 },
+        { name: "FV107 Scimitar", count: 1, hp: 1000, seats: 3, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~12mm", sideArmor: "~6mm", dmgPerShot: 210, rof: 80, dpm: 16800 },
       ],
       IFV: [
-        { name: "FV510 Warrior", count: 1, hp: 1750, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~30mm", sideArmor: "~15mm", dmgPerShot: "~210 (AP)" },
-        { name: "FV510 UA Warrior", count: 1, hp: 1750, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~80mm (STANAG 6)", sideArmor: "~30mm", dmgPerShot: "~210 (AP)" },
+        { name: "FV510 Warrior", count: 1, hp: 1750, seats: 10, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~30mm", sideArmor: "~15mm", dmgPerShot: 210, rof: 80, dpm: 16800 },
+        { name: "FV510 UA Warrior", count: 1, hp: 1750, seats: 10, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~80mm (STANAG 6)", sideArmor: "~30mm", dmgPerShot: 210, rof: 80, dpm: 16800 },
       ],
       MBT: [
-        { name: "FV4034 Challenger 2", count: 1, hp: 3000, weapon: "120mm L30A1 Rifled + L37A2 RWS", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~80-150mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "FV4034 Challenger 2", count: 1, hp: 3000, seats: 4, weapon: "120mm L30A1 Rifled + L37A2 RWS", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~80-150mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
     },
   },
   CAF: {
     name: "Canadian Army", abbr: "CAF", side: "BLUFOR", type: "Conventional",
     color: "#5a2828", accent: "#ffffff",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Sniper", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Sniper","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [
-        { name: "MSVS Truck Transport", count: 1 },
-        { name: "LUVW Transport", count: 1 },
-        { name: "LUV-A1 Transport", count: 1 },
-      ],
-      Logistics: [
-        { name: "MSVS Truck Logistics", count: 3 },
-        { name: "LUVW Logistics", count: 1 },
-        { name: "LUV-A1 Logistics", count: 1 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [
-        { name: "CH-146 Griffon", count: 1 },
-        { name: "CH-178 Chinook", count: 1 },
-      ],
+      Transport: [{ name: "MSVS Truck Transport", count: 1, seats: 18 },{ name: "LUVW Transport", count: 1, seats: 5 },{ name: "LUV-A1 Transport", count: 1, seats: 5 }],
+      Logistics: [{ name: "MSVS Truck Logistics", count: 3, seats: 3 },{ name: "LUVW Logistics", count: 1, seats: 3 },{ name: "LUV-A1 Logistics", count: 1, seats: 3 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "CH-146 Griffon", count: 1, seats: 13 },{ name: "CH-178 Chinook", count: 1, seats: 26 }],
       "Light Attack": [
-        { name: "TAPV M2 CROWS", count: 1 },
-        { name: "LUVW M2", count: 1 },
-        { name: "M113A3 M2", count: 1 },
-        { name: "TLAV M2 RWS", count: 1 },
-        { name: "RHIB M2A1", count: 1 },
-        { name: "RHIB M240", count: 1 },
+        { name: "TAPV M2 CROWS", count: 1, seats: 5 },{ name: "LUVW M2", count: 1, seats: 5 },
+        { name: "M113A3 M2", count: 1, seats: 7 },{ name: "TLAV M2 RWS", count: 1, seats: 7 },
+        { name: "RHIB M2A1", count: 1, seats: 6 },{ name: "RHIB M240", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "LAV III M2 RWS", count: 1, hp: 1250, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "LAV III M2 RWS", count: 1, hp: 1250, seats: 11, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
       IFV: [
-        { name: "LAV 6.0", count: 1, hp: 1500, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: "~175 (AP)" },
-        { name: "Coyote ARV", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+        { name: "LAV 6.0", count: 1, hp: 1500, seats: 10, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: 175, rof: 200, dpm: 35000 },
+        { name: "Coyote ARV", count: 1, hp: 1250, seats: 4, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 175, rof: 200, dpm: 35000 },
       ],
       MBT: [
-        { name: "Leopard 2A6M", count: 1, hp: 3000, weapon: "120mm L/55 + MG3 coax", pen: "800mm (APFSDS)", frontArmor: "~750mm+ (composite)", sideArmor: "~80-120mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "Leopard 2A6M", count: 1, hp: 3000, seats: 4, weapon: "120mm L/55 + MG3 coax", pen: "800mm (APFSDS)", frontArmor: "~750mm+ (composite)", sideArmor: "~80-120mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
     },
   },
   ADF: {
     name: "Australian Defence Force", abbr: "ADF", side: "BLUFOR", type: "Conventional",
     color: "#6b5b3a", accent: "#ffd700",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "MAN HX60 Transport", count: 1 }],
-      Logistics: [{ name: "MAN HX60 Logistics", count: 3 }],
-      Helicopter: [
-        { name: "MRH-90 Taipan", count: 1 },
-        { name: "UH-60M Black Hawk", count: 1 },
-      ],
-      "Light Attack": [
-        { name: "Bushmaster PMV M2 Open", count: 1 },
-        { name: "Bushmaster PMV M2 RWS", count: 1 },
-      ],
+      Transport: [{ name: "MAN HX60 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "MAN HX60 Logistics", count: 3, seats: 3 }],
+      Helicopter: [{ name: "MRH-90 Taipan", count: 1, seats: 12 },{ name: "UH-60M Black Hawk", count: 1, seats: 13 }],
+      "Light Attack": [{ name: "Bushmaster PMV M2 Open", count: 1, seats: 8 },{ name: "Bushmaster PMV M2 RWS", count: 1, seats: 8 }],
       APC: [],
       IFV: [
-        { name: "ASLAV-25", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+        { name: "ASLAV-25", count: 1, hp: 1250, seats: 10, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 175, rof: 200, dpm: 35000 },
       ],
       MBT: [
-        { name: "M1A1 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M240 coax", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "M1A1 Abrams", count: 1, hp: 3000, seats: 3, weapon: "120mm M256 + M240 coax", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
     },
   },
   USMC: {
     name: "US Marine Corps", abbr: "USMC", side: "BLUFOR", type: "Conventional",
     color: "#3a3a2a", accent: "#cc0000",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "M939 Truck Transport", count: 1 }],
-      Logistics: [
-        { name: "M939 Truck Logistics", count: 3 },
-        { name: "AAVC-7A1 Logistics", count: 1, hp: 1500 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "UH-1Y Venom", count: 2 }],
+      Transport: [{ name: "M939 Truck Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "M939 Truck Logistics", count: 3, seats: 3 },{ name: "AAVC-7A1 Logistics", count: 1, hp: 1500, seats: 7 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "UH-1Y Venom", count: 2, seats: 10 }],
       "Light Attack": [
-        { name: "M-ATV M2 CROWS", count: 1 },
-        { name: "M1151 M2 Open", count: 1 },
-        { name: "M-ATV TOW", count: 1 },
-        { name: "RHIB M2A1", count: 1 },
-        { name: "RHIB M240", count: 1 },
+        { name: "M-ATV M2 CROWS", count: 1, seats: 5 },{ name: "M1151 M2 Open", count: 1, seats: 5 },
+        { name: "M-ATV TOW", count: 1, seats: 5 },{ name: "RHIB M2A1", count: 1, seats: 6 },{ name: "RHIB M240", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "AAVP-7A1 Mk19", count: 1, hp: 1500, weapon: "Mk19 40mm AGL", pen: "~50mm (HEDP)", frontArmor: "~45mm", sideArmor: "~30mm", dmgPerShot: "~250 (HEDP)" },
+        { name: "AAVP-7A1 Mk19", count: 1, hp: 1500, seats: 18, weapon: "Mk19 40mm AGL", pen: "~50mm (HEDP)", frontArmor: "~45mm", sideArmor: "~30mm", dmgPerShot: 250, rof: 60, dpm: 15000 },
       ],
       IFV: [
-        { name: "LAV-25", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+        { name: "LAV-25", count: 1, hp: 1250, seats: 8, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 175, rof: 200, dpm: 35000 },
       ],
       MBT: [
-        { name: "M1A1 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "M1A1 Abrams", count: 1, hp: 3000, seats: 3, weapon: "120mm M256 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
     },
   },
   AFU: {
     name: "Armed Forces of Ukraine", abbr: "AFU", side: "BLUFOR", type: "Conventional",
     color: "#1a4a8a", accent: "#ffd700",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "KrAZ-6322 Transport", count: 1 }],
-      Logistics: [
-        { name: "KrAZ-6322 Logistics", count: 3 },
-      ],
-      Helicopter: [{ name: "Mi-8 (AFU)", count: 2 }],
-      "Light Attack": [
-        { name: "Kozak-2M1 NSV", count: 1 },
-        { name: "Kozak-2M1 AGS-17", count: 1 },
-        { name: "BRDM-2L1 Stugna-P", count: 1 },
-      ],
+      Transport: [{ name: "KrAZ-6322 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "KrAZ-6322 Logistics", count: 3, seats: 3 }],
+      Helicopter: [{ name: "Mi-8 (AFU)", count: 2, seats: 18 }],
+      "Light Attack": [{ name: "Kozak-2M1 NSV", count: 1, seats: 9 },{ name: "Kozak-2M1 AGS-17", count: 1, seats: 9 },{ name: "BRDM-2L1 Stugna-P", count: 1, seats: 3 }],
       APC: [
-        { name: "BTR-4 APC variant", count: 1, hp: 1250, weapon: "NSV 12.7mm / AGS-17", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "BTR-4 APC variant", count: 1, hp: 1250, seats: 10, weapon: "NSV 12.7mm / AGS-17", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
       IFV: [
-        { name: "BTR-4 Bucephalus", count: 1, hp: 1500, weapon: "30mm ZTM-1 + Barrier ATGM", pen: "~70mm (AP) / 800mm (ATGM)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: "~175 (AP) / 1400 (ATGM)" },
+        { name: "BTR-4 Bucephalus", count: 1, hp: 1500, seats: 10, weapon: "30mm ZTM-1 + Barrier ATGM", pen: "~70mm (AP) / 800mm (ATGM)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: 175, rof: 200, dpm: 35000, atgmDmg: 1400, atgmReload: 25 },
       ],
       MBT: [
-        { name: "T-64BM2 Bulat", count: 1, hp: 3000, weapon: "125mm 2A46 + PKT coax", pen: "800mm (APFSDS)", frontArmor: "~600mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-64BM2 Bulat", count: 1, hp: 3000, seats: 3, weapon: "125mm 2A46 + PKT coax", pen: "800mm (APFSDS)", frontArmor: "~600mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
-      Artillery: [
-        { name: "KrAZ-6322 BM-21 Grad", count: 1 },
-      ],
+      Artillery: [{ name: "KrAZ-6322 BM-21 Grad", count: 1, seats: 2 }],
     },
   },
   RGF: {
     name: "Russian Ground Forces", abbr: "RGF", side: "REDFOR", type: "Conventional",
     color: "#4a2828", accent: "#d4a843",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "Kamaz 5350 Transport", count: 1 }],
-      Logistics: [
-        { name: "Kamaz 5350 Logistics", count: 3 },
-        { name: "MT-LB PKT Logistics", count: 1 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Mi-8", count: 2 }],
+      Transport: [{ name: "Kamaz 5350 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "Kamaz 5350 Logistics", count: 3, seats: 3 },{ name: "MT-LB PKT Logistics", count: 1, seats: 5 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "Mi-8", count: 2, seats: 18 }],
       "Light Attack": [
-        { name: "BRDM-2 KPVT", count: 1 },
-        { name: "Tigr-M Kord", count: 1 },
-        { name: "Tigr-M Kord RWS", count: 1 },
-        { name: "RHIB NSV", count: 1 },
-        { name: "RHIB PKP", count: 1 },
+        { name: "BRDM-2 KPVT", count: 1, seats: 3 },{ name: "Tigr-M Kord", count: 1, seats: 5 },
+        { name: "Tigr-M Kord RWS", count: 1, seats: 5 },{ name: "RHIB NSV", count: 1, seats: 6 },{ name: "RHIB PKP", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
-        { name: "MT-LBM 6MA", count: 1, hp: 750, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~35 (GPMG)" },
-        { name: "BRDM-2 Spandrel", count: 1, hp: 500, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "1400 (ATGM)" },
-        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+        { name: "MT-LB VMK", count: 1, hp: 750, seats: 13, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "MT-LBM 6MA", count: 1, hp: 750, seats: 7, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 35, rof: 600, dpm: 21000 },
+        { name: "BRDM-2 Spandrel", count: 1, hp: 500, seats: 3, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 1400, rof: 2, dpm: 2800, atgmDmg: 1400, atgmReload: 30 },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, seats: 10, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 100, rof: 250, dpm: 25000 },
       ],
       IFV: [
-        { name: "MT-LBM 6MB", count: 1, hp: 750, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
-        { name: "BTR-82A", count: 1, hp: 1250, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
-        { name: "BMP-2", count: 1, hp: 1250, weapon: "2A42 30mm + 9M113 Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "MT-LBM 6MB", count: 1, hp: 750, seats: 7, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 165, rof: 200, dpm: 33000 },
+        { name: "BTR-82A", count: 1, hp: 1250, seats: 10, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 165, rof: 200, dpm: 33000 },
+        { name: "BMP-2", count: 1, hp: 1250, seats: 10, weapon: "2A42 30mm + Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
       ],
       MBT: [
-        { name: "T-72B3", count: 1, hp: 3000, weapon: "125mm 2A46M-5 + NSVT coax + Reflex ATGM", pen: "800mm (APFSDS) / 750mm (Reflex)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-72B3", count: 1, hp: 3000, seats: 3, weapon: "125mm 2A46M-5 + NSVT + Reflex ATGM", pen: "800mm (APFSDS) / 750mm (Reflex)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: 8000, rof: 7, dpm: 56000, atgmDmg: 1400, atgmReload: 20 },
       ],
     },
   },
   VDV: {
     name: "Russian Airborne Forces", abbr: "VDV", side: "REDFOR", type: "Conventional",
     color: "#2a3a5a", accent: "#87ceeb",
-    roles: [
-      "Squad Leader (Rifleman w/ GL)", "Rifleman", "Medic", "Automatic Rifleman",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader (Rifleman w/ GL)","Rifleman","Medic","Automatic Rifleman","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "Kamaz 5350 Transport", count: 1 }],
-      Logistics: [
-        { name: "Kamaz 5350 Logistics", count: 3 },
-        { name: "BTR-D Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Mi-8", count: 2 }],
+      Transport: [{ name: "Kamaz 5350 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "Kamaz 5350 Logistics", count: 3, seats: 3 },{ name: "BTR-D Logistics", count: 1, seats: 5 }],
+      Helicopter: [{ name: "Mi-8", count: 2, seats: 18 }],
       "Light Attack": [
-        { name: "BRDM-2 KPVT", count: 1 },
-        { name: "Tigr-M Kord", count: 1 },
-        { name: "BTR-D KPVT", count: 1 },
-        { name: "BTR-ZD AA", count: 1 },
+        { name: "BRDM-2 KPVT", count: 1, seats: 3 },{ name: "Tigr-M Kord", count: 1, seats: 5 },
+        { name: "BTR-D KPVT", count: 1, seats: 7 },{ name: "BTR-ZD AA", count: 1, seats: 3 },
       ],
       APC: [
-        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
-        { name: "BRDM-2 Spandrel", count: 1, hp: 500, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "1400 (ATGM)" },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, seats: 10, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 100, rof: 250, dpm: 25000 },
+        { name: "BRDM-2 Spandrel", count: 1, hp: 500, seats: 3, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 1400, rof: 2, dpm: 2800, atgmDmg: 1400, atgmReload: 30 },
       ],
       IFV: [
-        { name: "BMD-1M", count: 1, hp: 1000, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "~1050 (HEAT)" },
-        { name: "BMD-4M", count: 1, hp: 1250, weapon: "2A72 30mm + 100mm 2A70 + Arkan ATGM", pen: "~65mm (30mm) / 600mm (100mm HEAT) / 800mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "~165 (30mm AP) / 1400 (ATGM)" },
-        { name: "Sprut-SDM1", count: 1, hp: 1250, weapon: "125mm 2A75", pen: "800mm (APFSDS)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "BMD-1M", count: 1, hp: 1000, seats: 8, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: 1050, rof: 8, dpm: 8400, atgmDmg: 1400, atgmReload: 30 },
+        { name: "BMD-4M", count: 1, hp: 1250, seats: 8, weapon: "2A72 30mm + 100mm + Arkan ATGM", pen: "~65mm (30mm) / 600mm (HEAT) / 800mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 20 },
+        { name: "Sprut-SDM1", count: 1, hp: 1250, seats: 3, weapon: "125mm 2A75", pen: "800mm (APFSDS)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
       MBT: [
-        { name: "T-72B3", count: 1, hp: 3000, weapon: "125mm 2A46M-5 + NSVT + Reflex ATGM", pen: "800mm (APFSDS)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-72B3", count: 1, hp: 3000, seats: 3, weapon: "125mm 2A46M-5 + NSVT + Reflex ATGM", pen: "800mm (APFSDS)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: 8000, rof: 7, dpm: 56000, atgmDmg: 1400, atgmReload: 20 },
       ],
     },
   },
   PLA: {
     name: "People's Liberation Army", abbr: "PLA", side: "PAC", type: "Conventional",
     color: "#8b0000", accent: "#ffd700",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [
-        { name: "CTM131 Transport", count: 1 },
-        { name: "CTM131 QJY88", count: 1 },
-        { name: "CTM131 QJZ89", count: 1 },
-      ],
-      Logistics: [
-        { name: "CTM131 Logistics", count: 3 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Z-8G", count: 2 }],
+      Transport: [{ name: "CTM131 Transport", count: 1, seats: 18 },{ name: "CTM131 QJY88", count: 1, seats: 5 },{ name: "CTM131 QJZ89", count: 1, seats: 5 }],
+      Logistics: [{ name: "CTM131 Logistics", count: 3, seats: 3 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "Z-8G", count: 2, seats: 18 }],
       "Light Attack": [
-        { name: "CSK131 QJZ89", count: 1 },
-        { name: "CSK131 QJZ89 RWS", count: 1 },
-        { name: "CSK131 HJ-8 ATGM", count: 1 },
-        { name: "RHIB QJY88", count: 1 },
-        { name: "RHIB QJZ89", count: 1 },
+        { name: "CSK131 QJZ89", count: 1, seats: 5 },{ name: "CSK131 QJZ89 RWS", count: 1, seats: 5 },
+        { name: "CSK131 HJ-8 ATGM", count: 1, seats: 5 },{ name: "RHIB QJY88", count: 1, seats: 6 },{ name: "RHIB QJZ89", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "ZSL-10 QJZ89 RWS", count: 1, hp: 1250, weapon: "QJZ89 12.7mm RWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
-        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "ZSL-10 QJZ89 RWS", count: 1, hp: 1250, seats: 11, weapon: "QJZ89 12.7mm RWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, seats: 11, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
       IFV: [
-        { name: "ZBD-04A", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
-        { name: "ZBL-08", count: 1, hp: 1250, weapon: "30mm ZPT-99", pen: "~65mm (AP)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: "~165 (AP)" },
-        { name: "ZBL-08 HJ-73C", count: 1, hp: 1250, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "ZBD-04A", count: 1, hp: 1500, seats: 10, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
+        { name: "ZBL-08", count: 1, hp: 1250, seats: 10, weapon: "30mm ZPT-99", pen: "~65mm (AP)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: 165, rof: 200, dpm: 33000 },
+        { name: "ZBL-08 HJ-73C", count: 1, hp: 1250, seats: 10, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
       ],
       MBT: [
-        { name: "ZTZ-99A", count: 1, hp: 3000, weapon: "125mm ZPT-98 + QJC88 12.7mm RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "ZTZ-99A", count: 1, hp: 3000, seats: 4, weapon: "125mm ZPT-98 + QJC88 RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
     },
   },
   PLAAGF: {
     name: "PLA Amphibious Ground Force", abbr: "PLAAGF", side: "PAC", type: "Conventional",
     color: "#5a0000", accent: "#ffd700",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "CTM131 Transport", count: 1 }],
-      Logistics: [
-        { name: "CTM131 Logistics", count: 3 },
-        { name: "ZSD-05 Logistics", count: 1 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Z-8J", count: 2 }],
-      "Light Attack": [
-        { name: "CSK131 QJZ89", count: 1 },
-        { name: "CSK131 HJ-8 ATGM", count: 1 },
-      ],
+      Transport: [{ name: "CTM131 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "CTM131 Logistics", count: 3, seats: 3 },{ name: "ZSD-05 Logistics", count: 1, seats: 5 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "Z-8J", count: 2, seats: 18 }],
+      "Light Attack": [{ name: "CSK131 QJZ89", count: 1, seats: 5 },{ name: "CSK131 HJ-8 ATGM", count: 1, seats: 5 }],
       APC: [
-        { name: "ZSD-05 QJZ89", count: 2, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "ZSD-05 QJZ89", count: 2, hp: 1250, seats: 11, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
       IFV: [
-        { name: "ZBD-05", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
-        { name: "ZTD-05", count: 1, hp: 1250, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "ZBD-05", count: 1, hp: 1500, seats: 10, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
+        { name: "ZTD-05 MGS", count: 1, hp: 1250, seats: 3, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: 8000, rof: 6, dpm: 48000 },
       ],
       MBT: [
-        { name: "ZTZ-99A", count: 1, hp: 3000, weapon: "125mm ZPT-98 + QJC88 RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "ZTZ-99A", count: 1, hp: 3000, seats: 4, weapon: "125mm ZPT-98 + QJC88 RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
     },
   },
   PLANMC: {
     name: "PLA Navy Marine Corps", abbr: "PLANMC", side: "PAC", type: "Conventional",
     color: "#1a3a6a", accent: "#ffd700",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "CTM131 Transport", count: 1 }],
-      Logistics: [
-        { name: "CTM131 Logistics", count: 3 },
-        { name: "ZSD-05 Logistics", count: 1 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Z-8J", count: 2 }],
-      "Light Attack": [
-        { name: "CSK131 QJZ89", count: 1 },
-        { name: "CSK131 HJ-8 ATGM", count: 1 },
-      ],
+      Transport: [{ name: "CTM131 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "CTM131 Logistics", count: 3, seats: 3 },{ name: "ZSD-05 Logistics", count: 1, seats: 5 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
+      Helicopter: [{ name: "Z-8J", count: 2, seats: 18 }],
+      "Light Attack": [{ name: "CSK131 QJZ89", count: 1, seats: 5 },{ name: "CSK131 HJ-8 ATGM", count: 1, seats: 5 }],
       APC: [
-        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, seats: 11, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
       IFV: [
-        { name: "ZBD-05", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
-        { name: "ZTD-05 MGS", count: 1, hp: 1250, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "ZBD-05", count: 1, hp: 1500, seats: 10, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
+        { name: "ZTD-05 MGS", count: 1, hp: 1250, seats: 3, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: 8000, rof: 6, dpm: 48000 },
       ],
       MBT: [],
     },
@@ -417,204 +289,128 @@ const FACTIONS = {
   GFI: {
     name: "Ground Forces of Iran", abbr: "GFI", side: "INDEPENDENT", type: "Conventional",
     color: "#2a5a2a", accent: "#ffffff",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "Ural 4320 Transport", count: 1 }],
-      Logistics: [
-        { name: "Ural 4320 Logistics", count: 3 },
-        { name: "Simir Logistics", count: 1 },
-      ],
-      Helicopter: [{ name: "Mi-17", count: 2 }],
+      Transport: [{ name: "Ural 4320 Transport", count: 1, seats: 18 }],
+      Logistics: [{ name: "Ural 4320 Logistics", count: 3, seats: 3 },{ name: "Simir Logistics", count: 1, seats: 5 }],
+      Helicopter: [{ name: "Mi-17", count: 2, seats: 18 }],
       "Light Attack": [
-        { name: "BRDM-2 KPVT", count: 1 },
-        { name: "Simir Kord", count: 1 },
-        { name: "Simir MG-3", count: 1 },
-        { name: "Simir Kornet ATGM", count: 1 },
-        { name: "BRDM-2 Spandrel", count: 1 },
+        { name: "BRDM-2 KPVT", count: 1, seats: 3 },{ name: "Simir Kord", count: 1, seats: 5 },
+        { name: "Simir MG-3", count: 1, seats: 5 },{ name: "Simir Kornet ATGM", count: 1, seats: 5 },{ name: "BRDM-2 Spandrel", count: 1, seats: 3 },
       ],
       APC: [
-        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
-        { name: "MT-LBM 6MA", count: 1, hp: 750, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~35 (GPMG)" },
+        { name: "MT-LB VMK", count: 1, hp: 750, seats: 13, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "MT-LBM 6MA", count: 1, hp: 750, seats: 7, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 35, rof: 600, dpm: 21000 },
       ],
       IFV: [
-        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
-        { name: "BMP-2", count: 1, hp: 1250, weapon: "2A42 30mm + Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "BMP-1", count: 1, hp: 1250, seats: 10, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 1050, rof: 8, dpm: 8400, atgmDmg: 1400, atgmReload: 30 },
+        { name: "BMP-2", count: 1, hp: 1250, seats: 10, weapon: "2A42 30mm + Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 165, rof: 200, dpm: 33000, atgmDmg: 1400, atgmReload: 25 },
       ],
       MBT: [
-        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
-        { name: "T-72S", count: 1, hp: 3000, weapon: "125mm 2A46M + NSVT", pen: "800mm (APFSDS)", frontArmor: "~500mm (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-62", count: 1, hp: 3000, seats: 3, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
+        { name: "T-72S", count: 1, hp: 3000, seats: 3, weapon: "125mm 2A46M + NSVT", pen: "800mm (APFSDS)", frontArmor: "~500mm (ERA + composite)", sideArmor: "~80mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
     },
   },
   TLF: {
     name: "Turkish Land Forces", abbr: "TLF", side: "INDEPENDENT", type: "Conventional",
     color: "#8b0000", accent: "#ffffff",
-    roles: [
-      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
-      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
-      "Combat Engineer", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Rifleman","Medic","Automatic Rifleman","Grenadier","Light Anti-Tank","Heavy Anti-Tank","Marksman","Machine Gunner","Combat Engineer","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [{ name: "BMC Kirpi Transport", count: 1 }],
-      Logistics: [
-        { name: "BMC Kirpi Logistics", count: 3 },
-      ],
-      Helicopter: [{ name: "T-70 Black Hawk", count: 2 }],
-      "Light Attack": [
-        { name: "Cobra II M2", count: 1 },
-        { name: "Cobra II MG-3", count: 1 },
-        { name: "Cobra II Kornet", count: 1 },
-      ],
+      Transport: [{ name: "BMC Kirpi Transport", count: 1, seats: 12 }],
+      Logistics: [{ name: "BMC Kirpi Logistics", count: 3, seats: 3 }],
+      Helicopter: [{ name: "T-70 Black Hawk", count: 2, seats: 13 }],
+      "Light Attack": [{ name: "Cobra II M2", count: 1, seats: 5 },{ name: "Cobra II MG-3", count: 1, seats: 5 },{ name: "Cobra II Kornet", count: 1, seats: 5 }],
       APC: [
-        { name: "ACV-15 M2 RWS", count: 1, hp: 1250, weapon: "M2 .50cal RWS", pen: "N/A", frontArmor: "~25mm", sideArmor: "~10mm", dmgPerShot: "~55 (HMG)" },
-        { name: "PARS III Mk19 RWS", count: 1, hp: 1250, weapon: "Mk19 40mm RWS", pen: "~50mm (HEDP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~250 (HEDP)" },
+        { name: "ACV-15 M2 RWS", count: 1, hp: 1250, seats: 11, weapon: "M2 .50cal RWS", pen: "N/A", frontArmor: "~25mm", sideArmor: "~10mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "PARS III Mk19 RWS", count: 1, hp: 1250, seats: 10, weapon: "Mk19 40mm RWS", pen: "~50mm (HEDP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 250, rof: 60, dpm: 15000 },
       ],
       IFV: [
-        { name: "ACV-15 25mm", count: 1, hp: 1500, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~35mm", sideArmor: "~15mm", dmgPerShot: "~175 (AP) / 1400 (TOW)" },
-        { name: "PARS III 30mm", count: 1, hp: 1250, weapon: "Mk44 30mm", pen: "~65mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
+        { name: "ACV-15 25mm", count: 1, hp: 1500, seats: 10, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~35mm", sideArmor: "~15mm", dmgPerShot: 175, rof: 200, dpm: 35000, atgmDmg: 1400, atgmReload: 25 },
+        { name: "PARS III 30mm", count: 1, hp: 1250, seats: 10, weapon: "Mk44 30mm", pen: "~65mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: 165, rof: 200, dpm: 33000 },
       ],
       MBT: [
-        { name: "M60T Sabra", count: 1, hp: 3000, weapon: "120mm MG253 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~400mm (ERA + composite)", sideArmor: "~60mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "M60T Sabra", count: 1, hp: 3000, seats: 4, weapon: "120mm MG253 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~400mm (ERA + composite)", sideArmor: "~60mm", dmgPerShot: 8000, rof: 8, dpm: 64000 },
       ],
     },
   },
   INS: {
     name: "Insurgents", abbr: "INS", side: "INDEPENDENT", type: "Unconventional",
     color: "#3a3a1a", accent: "#8b4513",
-    roles: [
-      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper (Combat Eng.)",
-      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
-      "Scout", "Raider", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Fighter (Rifleman)","Medic","Sapper (Combat Eng.)","Machine Gunner","Marksman","Light Anti-Tank","Heavy Anti-Tank","Scout","Raider","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [
-        { name: "Ural 375D Transport", count: 1 },
-        { name: "Technical Transport", count: 1 },
-        { name: "Minsk 400 Motorbike", count: 2 },
-      ],
-      Logistics: [
-        { name: "Ural 375D Logistics", count: 3 },
-        { name: "Technical Logistics", count: 1 },
-      ],
+      Transport: [{ name: "Ural 375D Transport", count: 1, seats: 18 },{ name: "Technical Transport", count: 1, seats: 5 },{ name: "Minsk 400 Motorbike", count: 2, seats: 2 }],
+      Logistics: [{ name: "Ural 375D Logistics", count: 3, seats: 3 },{ name: "Technical Logistics", count: 1, seats: 3 }],
       "Light Attack": [
-        { name: "BRDM-2 KPVT", count: 1 },
-        { name: "Technical DShK", count: 1 },
-        { name: "Armored Technical DShK", count: 1 },
-        { name: "Technical SPG-9", count: 1 },
-        { name: "Armored Technical SPG-9", count: 1 },
-        { name: "Technical Rocket Artillery", count: 1 },
-        { name: "BRDM-2 Spandrel", count: 1 },
+        { name: "BRDM-2 KPVT", count: 1, seats: 3 },{ name: "Technical DShK", count: 1, seats: 5 },
+        { name: "Armored Technical DShK", count: 1, seats: 5 },{ name: "Technical SPG-9", count: 1, seats: 5 },
+        { name: "Armored Technical SPG-9", count: 1, seats: 5 },{ name: "Technical Rocket Artillery", count: 1, seats: 3 },
+        { name: "BRDM-2 Spandrel", count: 1, seats: 3 },
       ],
       APC: [
-        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, seats: 10, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 100, rof: 250, dpm: 25000 },
       ],
       IFV: [
-        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
-        { name: "MT-LB ZU-23-2", count: 1, hp: 750, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~120 (AP)" },
-        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~120 (AP)" },
-        { name: "Ural 375D ZU-23-2", count: 1, hp: 500, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "0mm", sideArmor: "0mm", dmgPerShot: "~120 (AP)" },
+        { name: "BMP-1", count: 1, hp: 1250, seats: 10, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 1050, rof: 8, dpm: 8400, atgmDmg: 1400, atgmReload: 30 },
+        { name: "MT-LB ZU-23-2", count: 1, hp: 750, seats: 5, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 120, rof: 400, dpm: 48000 },
+        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, seats: 10, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 120, rof: 400, dpm: 48000 },
+        { name: "Ural 375D ZU-23-2", count: 1, hp: 500, seats: 3, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "0mm", sideArmor: "0mm", dmgPerShot: 120, rof: 400, dpm: 48000 },
       ],
       MBT: [
-        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-62", count: 1, hp: 3000, seats: 3, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
     },
   },
   IMF: {
     name: "Irregular Militia Forces", abbr: "IMF", side: "INDEPENDENT", type: "Unconventional",
     color: "#4a4a2a", accent: "#cc9933",
-    roles: [
-      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper (Combat Eng.)",
-      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
-      "Scout", "Crewman", "Pilot", "Commander"
-    ],
+    roles: ["Squad Leader","Fighter (Rifleman)","Medic","Sapper (Combat Eng.)","Machine Gunner","Marksman","Light Anti-Tank","Heavy Anti-Tank","Scout","Crewman","Pilot","Commander"],
     vehicles: {
-      Transport: [
-        { name: "Ural 375D Transport", count: 1 },
-        { name: "Technical Transport", count: 1 },
-        { name: "Minsk 400 Motorbike", count: 2 },
-      ],
-      Logistics: [
-        { name: "Ural 375D Logistics", count: 3 },
-        { name: "Technical Logistics", count: 1 },
-        { name: "RHIB Logistics", count: 1 },
-      ],
+      Transport: [{ name: "Ural 375D Transport", count: 1, seats: 18 },{ name: "Technical Transport", count: 1, seats: 5 },{ name: "Minsk 400 Motorbike", count: 2, seats: 2 }],
+      Logistics: [{ name: "Ural 375D Logistics", count: 3, seats: 3 },{ name: "Technical Logistics", count: 1, seats: 3 },{ name: "RHIB Logistics", count: 1, seats: 6 }],
       "Light Attack": [
-        { name: "BRDM-2 KPVT", count: 1 },
-        { name: "Technical DShK", count: 1 },
-        { name: "Technical SPG-9", count: 1 },
-        { name: "Technical Rocket Artillery", count: 1 },
-        { name: "BRDM-2 Spandrel", count: 1 },
-        { name: "RHIB DShK", count: 1 },
+        { name: "BRDM-2 KPVT", count: 1, seats: 3 },{ name: "Technical DShK", count: 1, seats: 5 },
+        { name: "Technical SPG-9", count: 1, seats: 5 },{ name: "Technical Rocket Artillery", count: 1, seats: 3 },
+        { name: "BRDM-2 Spandrel", count: 1, seats: 3 },{ name: "RHIB DShK", count: 1, seats: 6 },
       ],
       APC: [
-        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
-        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+        { name: "MT-LB VMK", count: 1, hp: 750, seats: 13, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, seats: 10, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: 100, rof: 250, dpm: 25000 },
       ],
       IFV: [
-        { name: "MT-LBM 6MB", count: 1, hp: 750, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
-        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
-        { name: "MT-LB ZU-23-2", count: 1, hp: 750, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~120 (AP)" },
-        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~120 (AP)" },
+        { name: "MT-LBM 6MB", count: 1, hp: 750, seats: 7, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 165, rof: 200, dpm: 33000 },
+        { name: "BMP-1", count: 1, hp: 1250, seats: 10, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 1050, rof: 8, dpm: 8400, atgmDmg: 1400, atgmReload: 30 },
+        { name: "MT-LB ZU-23-2", count: 1, hp: 750, seats: 5, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: 120, rof: 400, dpm: 48000 },
+        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, seats: 10, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: 120, rof: 400, dpm: 48000 },
       ],
       MBT: [
-        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-62", count: 1, hp: 3000, seats: 3, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: 8000, rof: 7, dpm: 56000 },
       ],
     },
   },
   WPMC: {
     name: "Western PMC", abbr: "WPMC", side: "INDEPENDENT", type: "Unconventional",
     color: "#1a1a1a", accent: "#cc0000",
-    roles: [
-      "Squad Leader", "Operator (Rifleman)", "Medic", "Breacher",
-      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
-      "Combat Engineer", "Crewman", "Commander"
-    ],
+    roles: ["Squad Leader","Operator (Rifleman)","Medic","Breacher","Machine Gunner","Marksman","Light Anti-Tank","Heavy Anti-Tank","Combat Engineer","Crewman","Commander"],
     vehicles: {
-      Transport: [{ name: "CPV Transport", count: 1 }],
-      Logistics: [
-        { name: "CPV Logistics", count: 3 },
-      ],
-      "Light Attack": [
-        { name: "CPV M2", count: 1 },
-        { name: "CPV Mk19", count: 1 },
-        { name: "CPV MGL", count: 1 },
-      ],
-      APC: [],
-      IFV: [],
-      MBT: [],
+      Transport: [{ name: "CPV Transport", count: 1, seats: 5 }],
+      Logistics: [{ name: "CPV Logistics", count: 3, seats: 3 }],
+      "Light Attack": [{ name: "CPV M2", count: 1, seats: 5 },{ name: "CPV Mk19", count: 1, seats: 5 },{ name: "CPV MGL", count: 1, seats: 5 }],
+      APC: [], IFV: [], MBT: [],
     },
   },
   CRF: {
     name: "Canadian Resistance Forces", abbr: "CRF", side: "INDEPENDENT", type: "Unconventional",
     color: "#5a1a1a", accent: "#ffffff",
-    roles: [
-      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper",
-      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
-      "Scout", "Crewman", "Commander"
-    ],
+    roles: ["Squad Leader","Fighter (Rifleman)","Medic","Sapper","Machine Gunner","Marksman","Light Anti-Tank","Heavy Anti-Tank","Scout","Crewman","Commander"],
     vehicles: {
-      Transport: [
-        { name: "LUV-A1 Transport", count: 1 },
-        { name: "Civilian Truck Transport", count: 1 },
-      ],
-      Logistics: [
-        { name: "LUV-A1 Logistics", count: 1 },
-        { name: "Civilian Truck Logistics", count: 3 },
-      ],
-      "Light Attack": [
-        { name: "LUV-A1 M2", count: 1 },
-        { name: "LUV-A1 C6", count: 1 },
-        { name: "Technical DShK", count: 1 },
-      ],
+      Transport: [{ name: "LUV-A1 Transport", count: 1, seats: 5 },{ name: "Civilian Truck Transport", count: 1, seats: 10 }],
+      Logistics: [{ name: "LUV-A1 Logistics", count: 1, seats: 3 },{ name: "Civilian Truck Logistics", count: 3, seats: 3 }],
+      "Light Attack": [{ name: "LUV-A1 M2", count: 1, seats: 5 },{ name: "LUV-A1 C6", count: 1, seats: 5 },{ name: "Technical DShK", count: 1, seats: 5 }],
       APC: [
-        { name: "M113A3 M2", count: 1, hp: 1000, weapon: "M2 .50cal", pen: "N/A", frontArmor: "~38mm", sideArmor: "~25mm", dmgPerShot: "~55 (HMG)" },
+        { name: "M113A3 M2", count: 1, hp: 1000, seats: 7, weapon: "M2 .50cal", pen: "N/A", frontArmor: "~38mm", sideArmor: "~25mm", dmgPerShot: 55, rof: 300, dpm: 16500 },
       ],
-      IFV: [],
-      MBT: [],
+      IFV: [], MBT: [],
     },
   },
 };
@@ -689,7 +485,7 @@ function OverviewTab() {
                               {vehicles.length > 3 ? ` +${vehicles.length - 3}` : ""}
                             </div>
                           </div>
-                        ) : <span style={{ color: "#444" }}>{"\u2014"}</span>}
+                        ) : <span style={{ color: "#444" }}>{"—"}</span>}
                       </td>
                     );
                   })}
@@ -886,17 +682,22 @@ function ComparisonTab() {
           )}
         </div>
         {hasStats && (
-          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px 12px", fontSize: 10 }}>
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr 1fr", gap: "2px 8px", fontSize: 10 }}>
             <Stat label="HP" value={veh.hp} highlight={veh.hp >= 2000} />
-            <Stat label="Weapon" value={veh.weapon} />
-            <Stat label="Penetration" value={veh.pen} highlight={veh.pen && veh.pen.includes("800")} />
+            <Stat label="Seats" value={veh.seats} />
+            <Stat label="Penetration" value={veh.pen} highlight={veh.pen && veh.pen.includes && veh.pen.includes("800")} />
+            <Stat label="Dmg/Shot" value={veh.dmgPerShot} highlight={veh.dmgPerShot >= 1000} />
+            <Stat label="ROF" value={veh.rof ? veh.rof + " rpm" : null} />
+            <Stat label="DPM" value={veh.dpm ? veh.dpm.toLocaleString() : null} highlight={veh.dpm >= 50000} />
             <Stat label="Front Armor" value={veh.frontArmor} />
             <Stat label="Side Armor" value={veh.sideArmor} />
-            <Stat label="Damage/Shot" value={veh.dmgPerShot} highlight={veh.dmgPerShot && veh.dmgPerShot.includes("8000")} />
+            <Stat label="Weapon" value={veh.weapon} />
+            {veh.atgmDmg && <Stat label="ATGM Dmg" value={veh.atgmDmg} highlight={true} />}
+            {veh.atgmReload && <Stat label="ATGM Reload" value={veh.atgmReload + "s"} />}
           </div>
         )}
         {!hasStats && (
-          <div style={{ fontSize: 9, color: "#555", fontStyle: "italic" }}>{"Light vehicle \u2014 no detailed armor stats"}</div>
+          <div style={{ fontSize: 9, color: "#555", fontStyle: "italic" }}>{"Light vehicle 2014 no detailed armor stats"}</div>
         )}
         {matchupResult && !isSelected && matchupResult.details.length > 0 && (
           <div style={{ marginTop: 4, borderTop: `1px solid ${vc.border}33`, paddingTop: 4 }}>
@@ -1006,7 +807,7 @@ function ComparisonTab() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
         {[fA, fB].map((f, i) => (
           <div key={i} style={{ background: "#111", borderRadius: 6, padding: 12, border: `1px solid ${f.accent}33` }}>
-            <h3 style={{ margin: 0, fontSize: 13, color: f.accent, marginBottom: 8 }}>{f.name} {"\u2014"} Infantry Roles ({f.roles.length})</h3>
+            <h3 style={{ margin: 0, fontSize: 13, color: f.accent, marginBottom: 8 }}>{f.name} {"—"} Infantry Roles ({f.roles.length})</h3>
             <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
               {f.roles.map(r => (
                 <span key={r} style={{
@@ -1030,7 +831,7 @@ function ComparisonTab() {
       <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
         {[{ f: fA, v: vA, label: fA.abbr, side: "A" }, { f: fB, v: vB, label: fB.abbr, side: "B" }].map(({ f, v, label, side }, idx) => (
           <div key={idx}>
-            <h4 style={{ fontSize: 12, color: f.accent, margin: "0 0 8px 0" }}>{label} {"\u2014"} {v.length} combat vehicles</h4>
+            <h4 style={{ fontSize: 12, color: f.accent, margin: "0 0 8px 0" }}>{label} {"—"} {v.length} combat vehicles</h4>
             {combatCats.map(cat => {
               const catVs = v.map((veh, i) => ({ ...veh, globalIdx: i })).filter(x => x.category === cat);
               if (catVs.length === 0) return null;
@@ -1051,7 +852,7 @@ function ComparisonTab() {
 
       {/* Threat Matrix */}
       <h3 style={{ fontSize: 14, color: "#ccc", borderBottom: "1px solid #333", paddingBottom: 6, marginTop: 24, marginBottom: 12 }}>
-        THREAT MATRIX {"\u2014"} Penetration Overview
+        THREAT MATRIX — Penetration Overview
       </h3>
       <ThreatMatrix fA={fA} fB={fB} vA={vA} vB={vB} />
     </div>
@@ -1148,7 +949,7 @@ function App() {
             SQUAD <span style={{ color: "#ef4444" }}>FACTION</span> DATABASE
           </h1>
           <p style={{ margin: "4px 0 0", fontSize: 11, color: "#666" }}>
-            {"All 17 factions \u2014 vehicles, roles, armor stats & comparison tool"}
+            All 17 factions — vehicles, roles, armor stats & comparison tool
           </p>
         </div>
         <div style={{ display: "flex", gap: 0, marginBottom: 20 }}>
