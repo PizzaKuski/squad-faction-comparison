@@ -1,0 +1,1186 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Squad Faction Database</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;500;700;800&amp;display=swap" rel="stylesheet" />
+  <script crossorigin src="https://unpkg.com/react@18/umd/react.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js"></script>
+  <script crossorigin src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { background: #0a0a0a; }
+    select option { background: #111; color: #eee; }
+  </style>
+</head>
+<body>
+  <div id="root"></div>
+  <script type="text/babel">
+const { useState } = React;
+
+
+const FACTIONS = {
+  USA: {
+    name: "US Army", abbr: "USA", side: "BLUFOR", type: "Conventional",
+    color: "#4a6741", accent: "#c9a227",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "M939 Truck Transport", count: 1 },
+        { name: "Quad Bike", count: 1 },
+      ],
+      Logistics: [
+        { name: "M939 Truck Logistics", count: 3 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [
+        { name: "UH-60M Black Hawk", count: 2 },
+      ],
+      "Light Attack": [
+        { name: "M-ATV M2 CROWS", count: 1 },
+        { name: "M-ATV M240 CROWS", count: 1 },
+        { name: "M-ATV TOW", count: 1 },
+        { name: "RHIB M2A1", count: 1 },
+        { name: "RHIB M240", count: 1 },
+      ],
+      APC: [
+        { name: "M1126 M2 CROWS", count: 1, hp: 1250, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: "~55 (HMG)" },
+        { name: "M1126 M240 CROWS", count: 1, hp: 1250, weapon: "M240 CROWS", pen: "N/A", frontArmor: "STANAG 4 (~14.5mm)", sideArmor: "STANAG 3", dmgPerShot: "~35 (GPMG)" },
+      ],
+      IFV: [
+        { name: "M2A3 Bradley", count: 1, hp: 2000, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~46mm (turret ~200mm)", sideArmor: "~20-30mm", dmgPerShot: "~175 (AP) / 1400 (TOW)" },
+      ],
+      MBT: [
+        { name: "M1A2 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M2 .50cal RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (composite)", sideArmor: "~100-200mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+      MGS: [
+        { name: "M1128 Stryker MGS", count: 1, hp: 1250, weapon: "105mm M68A2", pen: "800mm (APFSDS)", frontArmor: "~14.5mm (same as Stryker)", sideArmor: "~7mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  BAF: {
+    name: "British Armed Forces", abbr: "BAF", side: "BLUFOR", type: "Conventional",
+    color: "#2d4a2d", accent: "#d4a843",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "MAN HX Transport", count: 1 }],
+      Logistics: [
+        { name: "MAN HX Logistics", count: 3 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "SA330 Puma", count: 2 }],
+      "Light Attack": [
+        { name: "LPPV M2 Open", count: 1 },
+        { name: "LPPV M2 RWS", count: 1 },
+        { name: "LPPV L7A2 Open", count: 1 },
+        { name: "RHIB M2A1", count: 1 },
+      ],
+      APC: [
+        { name: "FV432 M2 Open", count: 1, hp: 1250, weapon: "M2A1 .50cal (open)", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: "~55 (HMG)" },
+        { name: "FV432 RWS", count: 1, hp: 1250, weapon: "L37A2 RWS", pen: "N/A", frontArmor: "~12.7mm", sideArmor: "~10mm", dmgPerShot: "~35 (GPMG)" },
+        { name: "FV107 Scimitar", count: 1, hp: 1000, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~12mm", sideArmor: "~6mm", dmgPerShot: "~210 (AP)" },
+      ],
+      IFV: [
+        { name: "FV510 Warrior", count: 1, hp: 1750, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~30mm", sideArmor: "~15mm", dmgPerShot: "~210 (AP)" },
+        { name: "FV510 UA Warrior", count: 1, hp: 1750, weapon: "30mm L21A1 RARDEN", pen: "~50mm", frontArmor: "~80mm (STANAG 6)", sideArmor: "~30mm", dmgPerShot: "~210 (AP)" },
+      ],
+      MBT: [
+        { name: "FV4034 Challenger 2", count: 1, hp: 3000, weapon: "120mm L30A1 Rifled + L37A2 RWS", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~80-150mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  CAF: {
+    name: "Canadian Army", abbr: "CAF", side: "BLUFOR", type: "Conventional",
+    color: "#5a2828", accent: "#ffffff",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Sniper", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "MSVS Truck Transport", count: 1 },
+        { name: "LUVW Transport", count: 1 },
+        { name: "LUV-A1 Transport", count: 1 },
+      ],
+      Logistics: [
+        { name: "MSVS Truck Logistics", count: 3 },
+        { name: "LUVW Logistics", count: 1 },
+        { name: "LUV-A1 Logistics", count: 1 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [
+        { name: "CH-146 Griffon", count: 1 },
+        { name: "CH-178 Chinook", count: 1 },
+      ],
+      "Light Attack": [
+        { name: "TAPV M2 CROWS", count: 1 },
+        { name: "LUVW M2", count: 1 },
+        { name: "M113A3 M2", count: 1 },
+        { name: "TLAV M2 RWS", count: 1 },
+        { name: "RHIB M2A1", count: 1 },
+        { name: "RHIB M240", count: 1 },
+      ],
+      APC: [
+        { name: "LAV III M2 RWS", count: 1, hp: 1250, weapon: "M2A1 .50cal CROWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [
+        { name: "LAV 6.0", count: 1, hp: 1500, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: "~175 (AP)" },
+        { name: "Coyote ARV", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+      ],
+      MBT: [
+        { name: "Leopard 2A6M", count: 1, hp: 3000, weapon: "120mm L/55 + MG3 coax", pen: "800mm (APFSDS)", frontArmor: "~750mm+ (composite)", sideArmor: "~80-120mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  ADF: {
+    name: "Australian Defence Force", abbr: "ADF", side: "BLUFOR", type: "Conventional",
+    color: "#6b5b3a", accent: "#ffd700",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "MAN HX60 Transport", count: 1 }],
+      Logistics: [{ name: "MAN HX60 Logistics", count: 3 }],
+      Helicopter: [
+        { name: "MRH-90 Taipan", count: 1 },
+        { name: "UH-60M Black Hawk", count: 1 },
+      ],
+      "Light Attack": [
+        { name: "Bushmaster PMV M2 Open", count: 1 },
+        { name: "Bushmaster PMV M2 RWS", count: 1 },
+      ],
+      APC: [],
+      IFV: [
+        { name: "ASLAV-25", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+      ],
+      MBT: [
+        { name: "M1A1 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M240 coax", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  USMC: {
+    name: "US Marine Corps", abbr: "USMC", side: "BLUFOR", type: "Conventional",
+    color: "#3a3a2a", accent: "#cc0000",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "M939 Truck Transport", count: 1 }],
+      Logistics: [
+        { name: "M939 Truck Logistics", count: 3 },
+        { name: "AAVC-7A1 Logistics", count: 1, hp: 1500 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "UH-1Y Venom", count: 2 }],
+      "Light Attack": [
+        { name: "M-ATV M2 CROWS", count: 1 },
+        { name: "M1151 M2 Open", count: 1 },
+        { name: "M-ATV TOW", count: 1 },
+        { name: "RHIB M2A1", count: 1 },
+        { name: "RHIB M240", count: 1 },
+      ],
+      APC: [
+        { name: "AAVP-7A1 Mk19", count: 1, hp: 1500, weapon: "Mk19 40mm AGL", pen: "~50mm (HEDP)", frontArmor: "~45mm", sideArmor: "~30mm", dmgPerShot: "~250 (HEDP)" },
+      ],
+      IFV: [
+        { name: "LAV-25", count: 1, hp: 1250, weapon: "M242 25mm", pen: "75mm (AP)", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~175 (AP)" },
+      ],
+      MBT: [
+        { name: "M1A1 Abrams", count: 1, hp: 3000, weapon: "120mm M256 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~700mm+ (composite)", sideArmor: "~100-180mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  AFU: {
+    name: "Armed Forces of Ukraine", abbr: "AFU", side: "BLUFOR", type: "Conventional",
+    color: "#1a4a8a", accent: "#ffd700",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "KrAZ-6322 Transport", count: 1 }],
+      Logistics: [
+        { name: "KrAZ-6322 Logistics", count: 3 },
+      ],
+      Helicopter: [{ name: "Mi-8 (AFU)", count: 2 }],
+      "Light Attack": [
+        { name: "Kozak-2M1 NSV", count: 1 },
+        { name: "Kozak-2M1 AGS-17", count: 1 },
+        { name: "BRDM-2L1 Stugna-P", count: 1 },
+      ],
+      APC: [
+        { name: "BTR-4 APC variant", count: 1, hp: 1250, weapon: "NSV 12.7mm / AGS-17", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [
+        { name: "BTR-4 Bucephalus", count: 1, hp: 1500, weapon: "30mm ZTM-1 + Barrier ATGM", pen: "~70mm (AP) / 800mm (ATGM)", frontArmor: "~20mm", sideArmor: "~10mm", dmgPerShot: "~175 (AP) / 1400 (ATGM)" },
+      ],
+      MBT: [
+        { name: "T-64BM2 Bulat", count: 1, hp: 3000, weapon: "125mm 2A46 + PKT coax", pen: "800mm (APFSDS)", frontArmor: "~600mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+      Artillery: [
+        { name: "KrAZ-6322 BM-21 Grad", count: 1 },
+      ],
+    },
+  },
+  RGF: {
+    name: "Russian Ground Forces", abbr: "RGF", side: "REDFOR", type: "Conventional",
+    color: "#4a2828", accent: "#d4a843",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "Kamaz 5350 Transport", count: 1 }],
+      Logistics: [
+        { name: "Kamaz 5350 Logistics", count: 3 },
+        { name: "MT-LB PKT Logistics", count: 1 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Mi-8", count: 2 }],
+      "Light Attack": [
+        { name: "BRDM-2 KPVT", count: 1 },
+        { name: "Tigr-M Kord", count: 1 },
+        { name: "Tigr-M Kord RWS", count: 1 },
+        { name: "RHIB NSV", count: 1 },
+        { name: "RHIB PKP", count: 1 },
+      ],
+      APC: [
+        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "MT-LBM 6MA", count: 1, hp: 750, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~35 (GPMG)" },
+        { name: "BRDM-2 Spandrel", count: 1, hp: 500, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "1400 (ATGM)" },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+      ],
+      IFV: [
+        { name: "MT-LBM 6MB", count: 1, hp: 750, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
+        { name: "BTR-82A", count: 1, hp: 1250, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
+        { name: "BMP-2", count: 1, hp: 1250, weapon: "2A42 30mm + 9M113 Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+      ],
+      MBT: [
+        { name: "T-72B3", count: 1, hp: 3000, weapon: "125mm 2A46M-5 + NSVT coax + Reflex ATGM", pen: "800mm (APFSDS) / 750mm (Reflex)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  VDV: {
+    name: "Russian Airborne Forces", abbr: "VDV", side: "REDFOR", type: "Conventional",
+    color: "#2a3a5a", accent: "#87ceeb",
+    roles: [
+      "Squad Leader (Rifleman w/ GL)", "Rifleman", "Medic", "Automatic Rifleman",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "Kamaz 5350 Transport", count: 1 }],
+      Logistics: [
+        { name: "Kamaz 5350 Logistics", count: 3 },
+        { name: "BTR-D Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Mi-8", count: 2 }],
+      "Light Attack": [
+        { name: "BRDM-2 KPVT", count: 1 },
+        { name: "Tigr-M Kord", count: 1 },
+        { name: "BTR-D KPVT", count: 1 },
+        { name: "BTR-ZD AA", count: 1 },
+      ],
+      APC: [
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+        { name: "BRDM-2 Spandrel", count: 1, hp: 500, weapon: "9M113 Konkurs ATGM", pen: "600mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "1400 (ATGM)" },
+      ],
+      IFV: [
+        { name: "BMD-1M", count: 1, hp: 1000, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "~1050 (HEAT)" },
+        { name: "BMD-4M", count: 1, hp: 1250, weapon: "2A72 30mm + 100mm 2A70 + Arkan ATGM", pen: "~65mm (30mm) / 600mm (100mm HEAT) / 800mm (ATGM)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "~165 (30mm AP) / 1400 (ATGM)" },
+        { name: "Sprut-SDM1", count: 1, hp: 1250, weapon: "125mm 2A75", pen: "800mm (APFSDS)", frontArmor: "~15mm", sideArmor: "~7mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+      MBT: [
+        { name: "T-72B3", count: 1, hp: 3000, weapon: "125mm 2A46M-5 + NSVT + Reflex ATGM", pen: "800mm (APFSDS)", frontArmor: "~650mm+ (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  PLA: {
+    name: "People's Liberation Army", abbr: "PLA", side: "PAC", type: "Conventional",
+    color: "#8b0000", accent: "#ffd700",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "CTM131 Transport", count: 1 },
+        { name: "CTM131 QJY88", count: 1 },
+        { name: "CTM131 QJZ89", count: 1 },
+      ],
+      Logistics: [
+        { name: "CTM131 Logistics", count: 3 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Z-8G", count: 2 }],
+      "Light Attack": [
+        { name: "CSK131 QJZ89", count: 1 },
+        { name: "CSK131 QJZ89 RWS", count: 1 },
+        { name: "CSK131 HJ-8 ATGM", count: 1 },
+        { name: "RHIB QJY88", count: 1 },
+        { name: "RHIB QJZ89", count: 1 },
+      ],
+      APC: [
+        { name: "ZSL-10 QJZ89 RWS", count: 1, hp: 1250, weapon: "QJZ89 12.7mm RWS", pen: "N/A", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [
+        { name: "ZBD-04A", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "ZBL-08", count: 1, hp: 1250, weapon: "30mm ZPT-99", pen: "~65mm (AP)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: "~165 (AP)" },
+        { name: "ZBL-08 HJ-73C", count: 1, hp: 1250, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~16mm", sideArmor: "~8mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+      ],
+      MBT: [
+        { name: "ZTZ-99A", count: 1, hp: 3000, weapon: "125mm ZPT-98 + QJC88 12.7mm RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  PLAAGF: {
+    name: "PLA Amphibious Ground Force", abbr: "PLAAGF", side: "PAC", type: "Conventional",
+    color: "#5a0000", accent: "#ffd700",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "CTM131 Transport", count: 1 }],
+      Logistics: [
+        { name: "CTM131 Logistics", count: 3 },
+        { name: "ZSD-05 Logistics", count: 1 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Z-8J", count: 2 }],
+      "Light Attack": [
+        { name: "CSK131 QJZ89", count: 1 },
+        { name: "CSK131 HJ-8 ATGM", count: 1 },
+      ],
+      APC: [
+        { name: "ZSD-05 QJZ89", count: 2, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [
+        { name: "ZBD-05", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "ZTD-05", count: 1, hp: 1250, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+      MBT: [
+        { name: "ZTZ-99A", count: 1, hp: 3000, weapon: "125mm ZPT-98 + QJC88 RWS", pen: "800mm (APFSDS)", frontArmor: "~800mm+ (ERA + composite)", sideArmor: "~80-100mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  PLANMC: {
+    name: "PLA Navy Marine Corps", abbr: "PLANMC", side: "PAC", type: "Conventional",
+    color: "#1a3a6a", accent: "#ffd700",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "CTM131 Transport", count: 1 }],
+      Logistics: [
+        { name: "CTM131 Logistics", count: 3 },
+        { name: "ZSD-05 Logistics", count: 1 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Z-8J", count: 2 }],
+      "Light Attack": [
+        { name: "CSK131 QJZ89", count: 1 },
+        { name: "CSK131 HJ-8 ATGM", count: 1 },
+      ],
+      APC: [
+        { name: "ZSD-05 QJZ89", count: 1, hp: 1250, weapon: "QJZ89 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [
+        { name: "ZBD-05", count: 1, hp: 1500, weapon: "30mm ZPT-99 + HJ-73C ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~25mm", sideArmor: "~15mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+        { name: "ZTD-05 MGS", count: 1, hp: 1250, weapon: "105mm", pen: "800mm (APFSDS)", frontArmor: "~25mm", sideArmor: "~12mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+      MBT: [],
+    },
+  },
+  GFI: {
+    name: "Ground Forces of Iran", abbr: "GFI", side: "INDEPENDENT", type: "Conventional",
+    color: "#2a5a2a", accent: "#ffffff",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "Ural 4320 Transport", count: 1 }],
+      Logistics: [
+        { name: "Ural 4320 Logistics", count: 3 },
+        { name: "Simir Logistics", count: 1 },
+      ],
+      Helicopter: [{ name: "Mi-17", count: 2 }],
+      "Light Attack": [
+        { name: "BRDM-2 KPVT", count: 1 },
+        { name: "Simir Kord", count: 1 },
+        { name: "Simir MG-3", count: 1 },
+        { name: "Simir Kornet ATGM", count: 1 },
+        { name: "BRDM-2 Spandrel", count: 1 },
+      ],
+      APC: [
+        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "MT-LBM 6MA", count: 1, hp: 750, weapon: "PKT 7.62mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~35 (GPMG)" },
+      ],
+      IFV: [
+        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
+        { name: "BMP-2", count: 1, hp: 1250, weapon: "2A42 30mm + Konkurs ATGM", pen: "~65mm (AP) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~165 (AP) / 1400 (ATGM)" },
+      ],
+      MBT: [
+        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
+        { name: "T-72S", count: 1, hp: 3000, weapon: "125mm 2A46M + NSVT", pen: "800mm (APFSDS)", frontArmor: "~500mm (ERA + composite)", sideArmor: "~80mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  TLF: {
+    name: "Turkish Land Forces", abbr: "TLF", side: "INDEPENDENT", type: "Conventional",
+    color: "#8b0000", accent: "#ffffff",
+    roles: [
+      "Squad Leader", "Rifleman", "Medic", "Automatic Rifleman", "Grenadier",
+      "Light Anti-Tank", "Heavy Anti-Tank", "Marksman", "Machine Gunner",
+      "Combat Engineer", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "BMC Kirpi Transport", count: 1 }],
+      Logistics: [
+        { name: "BMC Kirpi Logistics", count: 3 },
+      ],
+      Helicopter: [{ name: "T-70 Black Hawk", count: 2 }],
+      "Light Attack": [
+        { name: "Cobra II M2", count: 1 },
+        { name: "Cobra II MG-3", count: 1 },
+        { name: "Cobra II Kornet", count: 1 },
+      ],
+      APC: [
+        { name: "ACV-15 M2 RWS", count: 1, hp: 1250, weapon: "M2 .50cal RWS", pen: "N/A", frontArmor: "~25mm", sideArmor: "~10mm", dmgPerShot: "~55 (HMG)" },
+        { name: "PARS III Mk19 RWS", count: 1, hp: 1250, weapon: "Mk19 40mm RWS", pen: "~50mm (HEDP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~250 (HEDP)" },
+      ],
+      IFV: [
+        { name: "ACV-15 25mm", count: 1, hp: 1500, weapon: "M242 25mm + TOW ATGM", pen: "75mm (AP) / 900mm (TOW)", frontArmor: "~35mm", sideArmor: "~15mm", dmgPerShot: "~175 (AP) / 1400 (TOW)" },
+        { name: "PARS III 30mm", count: 1, hp: 1250, weapon: "Mk44 30mm", pen: "~65mm (AP)", frontArmor: "~14.5mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
+      ],
+      MBT: [
+        { name: "M60T Sabra", count: 1, hp: 3000, weapon: "120mm MG253 + M2 .50cal", pen: "800mm (APFSDS)", frontArmor: "~400mm (ERA + composite)", sideArmor: "~60mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  INS: {
+    name: "Insurgents", abbr: "INS", side: "INDEPENDENT", type: "Unconventional",
+    color: "#3a3a1a", accent: "#8b4513",
+    roles: [
+      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper (Combat Eng.)",
+      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
+      "Scout", "Raider", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "Ural 375D Transport", count: 1 },
+        { name: "Technical Transport", count: 1 },
+        { name: "Minsk 400 Motorbike", count: 2 },
+      ],
+      Logistics: [
+        { name: "Ural 375D Logistics", count: 3 },
+        { name: "Technical Logistics", count: 1 },
+      ],
+      "Light Attack": [
+        { name: "BRDM-2 KPVT", count: 1 },
+        { name: "Technical DShK", count: 1 },
+        { name: "Armored Technical DShK", count: 1 },
+        { name: "Technical SPG-9", count: 1 },
+        { name: "Armored Technical SPG-9", count: 1 },
+        { name: "Technical Rocket Artillery", count: 1 },
+        { name: "BRDM-2 Spandrel", count: 1 },
+      ],
+      APC: [
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+      ],
+      IFV: [
+        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
+        { name: "MT-LB ZU-23-2", count: 1, hp: 750, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~120 (AP)" },
+        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~120 (AP)" },
+        { name: "Ural 375D ZU-23-2", count: 1, hp: 500, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "0mm", sideArmor: "0mm", dmgPerShot: "~120 (AP)" },
+      ],
+      MBT: [
+        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  IMF: {
+    name: "Irregular Militia Forces", abbr: "IMF", side: "INDEPENDENT", type: "Unconventional",
+    color: "#4a4a2a", accent: "#cc9933",
+    roles: [
+      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper (Combat Eng.)",
+      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
+      "Scout", "Crewman", "Pilot", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "Ural 375D Transport", count: 1 },
+        { name: "Technical Transport", count: 1 },
+        { name: "Minsk 400 Motorbike", count: 2 },
+      ],
+      Logistics: [
+        { name: "Ural 375D Logistics", count: 3 },
+        { name: "Technical Logistics", count: 1 },
+        { name: "RHIB Logistics", count: 1 },
+      ],
+      "Light Attack": [
+        { name: "BRDM-2 KPVT", count: 1 },
+        { name: "Technical DShK", count: 1 },
+        { name: "Technical SPG-9", count: 1 },
+        { name: "Technical Rocket Artillery", count: 1 },
+        { name: "BRDM-2 Spandrel", count: 1 },
+        { name: "RHIB DShK", count: 1 },
+      ],
+      APC: [
+        { name: "MT-LB VMK", count: 1, hp: 750, weapon: "NSVT 12.7mm", pen: "N/A", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~55 (HMG)" },
+        { name: "BTR-80 KPVT", count: 1, hp: 1000, weapon: "KPVT 14.5mm", pen: "~32mm", frontArmor: "~10mm", sideArmor: "~7mm", dmgPerShot: "~100 (HMG)" },
+      ],
+      IFV: [
+        { name: "MT-LBM 6MB", count: 1, hp: 750, weapon: "2A72 30mm", pen: "~65mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~165 (AP)" },
+        { name: "BMP-1", count: 1, hp: 1250, weapon: "2A28 Grom 73mm + Malyutka ATGM", pen: "300mm (HEAT) / 600mm (ATGM)", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~1050 (HEAT)" },
+        { name: "MT-LB ZU-23-2", count: 1, hp: 750, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~14mm", sideArmor: "~7mm", dmgPerShot: "~120 (AP)" },
+        { name: "BMP-1 ZU-23-2", count: 1, hp: 1250, weapon: "ZU-23-2 23mm AA", pen: "~30mm", frontArmor: "~33mm", sideArmor: "~19mm", dmgPerShot: "~120 (AP)" },
+      ],
+      MBT: [
+        { name: "T-62", count: 1, hp: 3000, weapon: "115mm U-5TS", pen: "~500mm (APFSDS)", frontArmor: "~300mm", sideArmor: "~50mm", dmgPerShot: "8000 (APFSDS)" },
+      ],
+    },
+  },
+  WPMC: {
+    name: "Western PMC", abbr: "WPMC", side: "INDEPENDENT", type: "Unconventional",
+    color: "#1a1a1a", accent: "#cc0000",
+    roles: [
+      "Squad Leader", "Operator (Rifleman)", "Medic", "Breacher",
+      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
+      "Combat Engineer", "Crewman", "Commander"
+    ],
+    vehicles: {
+      Transport: [{ name: "CPV Transport", count: 1 }],
+      Logistics: [
+        { name: "CPV Logistics", count: 3 },
+      ],
+      "Light Attack": [
+        { name: "CPV M2", count: 1 },
+        { name: "CPV Mk19", count: 1 },
+        { name: "CPV MGL", count: 1 },
+      ],
+      APC: [],
+      IFV: [],
+      MBT: [],
+    },
+  },
+  CRF: {
+    name: "Canadian Resistance Forces", abbr: "CRF", side: "INDEPENDENT", type: "Unconventional",
+    color: "#5a1a1a", accent: "#ffffff",
+    roles: [
+      "Squad Leader", "Fighter (Rifleman)", "Medic", "Sapper",
+      "Machine Gunner", "Marksman", "Light Anti-Tank", "Heavy Anti-Tank",
+      "Scout", "Crewman", "Commander"
+    ],
+    vehicles: {
+      Transport: [
+        { name: "LUV-A1 Transport", count: 1 },
+        { name: "Civilian Truck Transport", count: 1 },
+      ],
+      Logistics: [
+        { name: "LUV-A1 Logistics", count: 1 },
+        { name: "Civilian Truck Logistics", count: 3 },
+      ],
+      "Light Attack": [
+        { name: "LUV-A1 M2", count: 1 },
+        { name: "LUV-A1 C6", count: 1 },
+        { name: "Technical DShK", count: 1 },
+      ],
+      APC: [
+        { name: "M113A3 M2", count: 1, hp: 1000, weapon: "M2 .50cal", pen: "N/A", frontArmor: "~38mm", sideArmor: "~25mm", dmgPerShot: "~55 (HMG)" },
+      ],
+      IFV: [],
+      MBT: [],
+    },
+  },
+};
+
+const SIDE_COLORS = {
+  BLUFOR: "#2563eb",
+  REDFOR: "#dc2626",
+  PAC: "#d97706",
+  INDEPENDENT: "#059669",
+};
+
+const VEHICLE_CATEGORIES = ["Transport", "Logistics", "Helicopter", "Light Attack", "APC", "IFV", "MBT", "MGS", "Artillery"];
+
+function OverviewTab() {
+  const [filterSide, setFilterSide] = useState("ALL");
+  const factionEntries = Object.entries(FACTIONS).filter(
+    ([, f]) => filterSide === "ALL" || f.side === filterSide
+  );
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 8, marginBottom: 20, flexWrap: "wrap" }}>
+        {["ALL", "BLUFOR", "REDFOR", "PAC", "INDEPENDENT"].map((s) => (
+          <button key={s} onClick={() => setFilterSide(s)}
+            style={{
+              padding: "6px 16px", border: "1px solid #444", borderRadius: 4,
+              background: filterSide === s ? (SIDE_COLORS[s] || "#555") : "#1e1e1e",
+              color: "#eee", cursor: "pointer", fontFamily: "'JetBrains Mono', monospace",
+              fontSize: 12, fontWeight: filterSide === s ? 700 : 400,
+            }}
+          >{s}</button>
+        ))}
+      </div>
+      <div style={{ overflowX: "auto" }}>
+        <table style={{ width: "100%", borderCollapse: "collapse", fontSize: 12, fontFamily: "'JetBrains Mono', monospace" }}>
+          <thead>
+            <tr style={{ background: "#111" }}>
+              <th style={thStyle}>Faction</th>
+              <th style={thStyle}>Side</th>
+              <th style={thStyle}>Roles</th>
+              {VEHICLE_CATEGORIES.map((c) => (
+                <th key={c} style={thStyle}>{c}</th>
+              ))}
+              <th style={thStyle}>Total Combat Vehicles</th>
+            </tr>
+          </thead>
+          <tbody>
+            {factionEntries.map(([key, f]) => {
+              const totalCombat = ["Light Attack", "APC", "IFV", "MBT", "MGS"].reduce((sum, cat) => {
+                return sum + (f.vehicles[cat] || []).reduce((s, v) => s + v.count, 0);
+              }, 0);
+              return (
+                <tr key={key} style={{ borderBottom: "1px solid #333" }}>
+                  <td style={{ ...tdStyle, fontWeight: 700, color: f.accent, whiteSpace: "nowrap" }}>
+                    <span style={{
+                      display: "inline-block", width: 8, height: 8, borderRadius: "50%",
+                      background: SIDE_COLORS[f.side], marginRight: 6
+                    }}></span>
+                    {f.abbr}
+                  </td>
+                  <td style={{ ...tdStyle, fontSize: 10, color: SIDE_COLORS[f.side] }}>{f.side}</td>
+                  <td style={{ ...tdStyle, textAlign: "center" }}>{f.roles.length}</td>
+                  {VEHICLE_CATEGORIES.map((cat) => {
+                    const vehicles = f.vehicles[cat] || [];
+                    const count = vehicles.reduce((s, v) => s + v.count, 0);
+                    return (
+                      <td key={cat} style={tdStyle} title={vehicles.map(v => `${v.name} x${v.count}`).join("\n")}>
+                        {count > 0 ? (
+                          <div>
+                            <span style={{ fontWeight: 700, fontSize: 14, color: count > 2 ? "#4ade80" : "#aaa" }}>{count}</span>
+                            <div style={{ fontSize: 9, color: "#888", marginTop: 2, maxWidth: 120 }}>
+                              {vehicles.map(v => v.name.replace(/ (variant|CROWS|Open|RWS)/g, '')).slice(0, 3).join(", ")}
+                              {vehicles.length > 3 ? ` +${vehicles.length - 3}` : ""}
+                            </div>
+                          </div>
+                        ) : <span style={{ color: "#444" }}>{"\u2014"}</span>}
+                      </td>
+                    );
+                  })}
+                  <td style={{ ...tdStyle, textAlign: "center", fontWeight: 700, fontSize: 16, color: totalCombat > 8 ? "#facc15" : totalCombat > 5 ? "#fb923c" : "#aaa" }}>{totalCombat}</td>
+                </tr>
+              );
+            })}
+          </tbody>
+        </table>
+      </div>
+      <p style={{ fontSize: 10, color: "#666", marginTop: 12 }}>
+        Hover over vehicle counts to see names. Numbers represent Combined Arms unit defaults. Actual layer counts vary.
+      </p>
+    </div>
+  );
+}
+
+// Smarter matchup: considers pen vs front armor, pen vs side armor, HP ratio, and damage output
+function assessMatchup(myVeh, enemyVeh) {
+  if (!myVeh.hp || !enemyVeh.hp) return { verdict: "unknown", label: "?", detail: "No stat data" };
+
+  const parsePen = (s) => {
+    if (!s || s === "N/A") return 0;
+    const nums = s.match(/\d+/g);
+    return nums ? Math.max(...nums.map(Number)) : 0;
+  };
+  const parseArmor = (s) => {
+    if (!s) return 0;
+    const nums = s.match(/\d+/g);
+    return nums ? Math.max(...nums.map(Number)) : 0;
+  };
+  const parseDmg = (s) => {
+    if (!s) return 0;
+    const nums = s.match(/\d+/g);
+    return nums ? Math.max(...nums.map(Number)) : 0;
+  };
+
+  const myPen = parsePen(myVeh.pen);
+  const myDmg = parseDmg(myVeh.dmgPerShot);
+  const myFront = parseArmor(myVeh.frontArmor);
+  const mySide = parseArmor(myVeh.sideArmor);
+
+  const ePen = parsePen(enemyVeh.pen);
+  const eDmg = parseDmg(enemyVeh.dmgPerShot);
+  const eFront = parseArmor(enemyVeh.frontArmor);
+  const eSide = parseArmor(enemyVeh.sideArmor);
+
+  // Can I pen their front?
+  const iCanPenFront = myPen > 0 && myPen >= eFront;
+  // Can they pen my front?
+  const theyCanPenFront = ePen > 0 && ePen >= myFront;
+  // Can I pen their side?
+  const iCanPenSide = myPen > 0 && myPen >= eSide;
+  // Can they pen my side?
+  const theyCanPenSide = ePen > 0 && ePen >= mySide;
+
+  // Approximate shots-to-kill (very rough: dmg * resist modifier ~0.3-0.6 for typical vehicles)
+  const modifier = 0.45;
+  const myShotsToKill = myDmg > 0 ? Math.ceil(enemyVeh.hp / (myDmg * modifier)) : 999;
+  const theirShotsToKill = eDmg > 0 ? Math.ceil(myVeh.hp / (eDmg * modifier)) : 999;
+
+  let score = 0;
+  let details = [];
+
+  // Penetration advantage
+  if (iCanPenFront && !theyCanPenFront) { score += 3; details.push("You pen their front, they can't pen yours"); }
+  else if (!iCanPenFront && theyCanPenFront) { score -= 3; details.push("They pen your front, you can't pen theirs"); }
+  else if (iCanPenFront && theyCanPenFront) { details.push("Both can pen frontally"); }
+  else if (!iCanPenFront && !theyCanPenFront) {
+    if (iCanPenSide && !theyCanPenSide) { score += 1; details.push("Flanking needed — you can pen sides, they can't"); }
+    else if (!iCanPenSide && theyCanPenSide) { score -= 1; details.push("Danger — they can pen your sides"); }
+    else { details.push("Neither can pen frontally — flank required"); }
+  }
+
+  // HP advantage
+  if (myVeh.hp > enemyVeh.hp * 1.3) { score += 1; details.push(`HP advantage (${myVeh.hp} vs ${enemyVeh.hp})`); }
+  else if (enemyVeh.hp > myVeh.hp * 1.3) { score -= 1; details.push(`HP disadvantage (${myVeh.hp} vs ${enemyVeh.hp})`); }
+
+  // Damage output
+  if (myDmg > eDmg * 2) { score += 1; details.push("Much higher damage output"); }
+  else if (eDmg > myDmg * 2) { score -= 1; details.push("Much lower damage output"); }
+
+  // ATGM presence
+  const myHasATGM = myVeh.pen && (myVeh.pen.includes("TOW") || myVeh.pen.includes("ATGM") || myVeh.pen.includes("Konkurs") || myVeh.pen.includes("Reflex") || myVeh.pen.includes("Barrier") || myVeh.pen.includes("HJ") || myVeh.pen.includes("Kornet") || myVeh.pen.includes("Spandrel") || myVeh.pen.includes("Malyutka") || myVeh.pen.includes("Arkan"));
+  const eHasATGM = enemyVeh.pen && (enemyVeh.pen.includes("TOW") || enemyVeh.pen.includes("ATGM") || enemyVeh.pen.includes("Konkurs") || enemyVeh.pen.includes("Reflex") || enemyVeh.pen.includes("Barrier") || enemyVeh.pen.includes("HJ") || enemyVeh.pen.includes("Kornet") || enemyVeh.pen.includes("Spandrel") || enemyVeh.pen.includes("Malyutka") || enemyVeh.pen.includes("Arkan"));
+  if (myHasATGM && !eHasATGM) { score += 1; details.push("You have ATGMs, they don't"); }
+  if (eHasATGM && !myHasATGM) { score -= 1; details.push("They have ATGMs, you don't"); }
+
+  // HMG-only vs armor
+  if (myPen === 0 && eFront > 0) { score -= 3; details.push("Your weapon can't damage them"); }
+  if (ePen === 0 && myFront > 0) { score += 2; details.push("Their weapon can't damage you"); }
+
+  let verdict, label;
+  if (score >= 3) { verdict = "safe"; label = "SAFE — You dominate"; }
+  else if (score >= 1) { verdict = "advantage"; label = "ADVANTAGE — Favorable"; }
+  else if (score >= -1) { verdict = "even"; label = "EVEN — 50/50"; }
+  else if (score >= -3) { verdict = "danger"; label = "DANGER — Unfavorable"; }
+  else { verdict = "lethal"; label = "LETHAL — Avoid!"; }
+
+  return { verdict, label, details, score, myShotsToKill, theirShotsToKill };
+}
+
+const verdictColors = {
+  safe: { bg: "#052e16", border: "#16a34a", text: "#4ade80", glow: "#22c55e33" },
+  advantage: { bg: "#052e16aa", border: "#15803d", text: "#86efac", glow: "#22c55e22" },
+  even: { bg: "#1a1a00", border: "#a16207", text: "#facc15", glow: "#eab30822" },
+  danger: { bg: "#1a0a00", border: "#c2410c", text: "#fb923c", glow: "#ea580c22" },
+  lethal: { bg: "#1a0000", border: "#dc2626", text: "#f87171", glow: "#ef444422" },
+  unknown: { bg: "#111", border: "#333", text: "#888", glow: "transparent" },
+};
+
+function ComparisonTab() {
+  const [factionA, setFactionA] = useState("USA");
+  const [factionB, setFactionB] = useState("RGF");
+  // selectedVehicle: { side: "A"|"B", index: number } or null
+  const [selectedVehicle, setSelectedVehicle] = useState(null);
+  const fA = FACTIONS[factionA];
+  const fB = FACTIONS[factionB];
+  const combatCats = ["Light Attack", "APC", "IFV", "MBT", "MGS", "Artillery"];
+
+  const allCombatVehicles = (f) => combatCats.flatMap(cat => (f.vehicles[cat] || []).map(v => ({ ...v, category: cat })));
+
+  const vA = allCombatVehicles(fA);
+  const vB = allCombatVehicles(fB);
+
+  // Reset selection when factions change
+  const handleFactionAChange = (e) => { setFactionA(e.target.value); setSelectedVehicle(null); };
+  const handleFactionBChange = (e) => { setFactionB(e.target.value); setSelectedVehicle(null); };
+
+  const selVeh = selectedVehicle
+    ? (selectedVehicle.side === "A" ? vA[selectedVehicle.index] : vB[selectedVehicle.index])
+    : null;
+  const enemyList = selectedVehicle
+    ? (selectedVehicle.side === "A" ? vB : vA)
+    : [];
+  const enemyFaction = selectedVehicle
+    ? (selectedVehicle.side === "A" ? fB : fA)
+    : null;
+  const myFaction = selectedVehicle
+    ? (selectedVehicle.side === "A" ? fA : fB)
+    : null;
+
+  // Compute matchups for the selected vehicle
+  const matchups = selVeh ? enemyList.map(e => ({ enemy: e, ...assessMatchup(selVeh, e) })) : [];
+
+  // For coloring enemy vehicle cards when a vehicle is selected
+  const getEnemyMatchup = (side, idx) => {
+    if (!selectedVehicle) return null;
+    // Am I on the enemy side?
+    if (selectedVehicle.side === side) return null; // same side, no coloring
+    const enemyVeh = side === "A" ? vA[idx] : vB[idx];
+    if (!selVeh || !enemyVeh) return null;
+    return assessMatchup(selVeh, enemyVeh);
+  };
+
+  const renderVehicleCard = (veh, globalIdx, side, isSelected, matchupResult) => {
+    const hasStats = !!veh.hp;
+    const vc = matchupResult ? verdictColors[matchupResult.verdict] : null;
+    return (
+      <div
+        key={`${side}-${globalIdx}`}
+        onClick={() => {
+          if (hasStats) {
+            if (selectedVehicle && selectedVehicle.side === side && selectedVehicle.index === globalIdx) {
+              setSelectedVehicle(null);
+            } else {
+              setSelectedVehicle({ side, index: globalIdx });
+            }
+          }
+        }}
+        style={{
+          background: isSelected ? "#1a2a1a" : vc ? vc.bg : "#111",
+          border: `1px solid ${isSelected ? "#4ade80" : vc ? vc.border : "#2a2a2a"}`,
+          borderRadius: 4, padding: 8, marginBottom: 4, fontSize: 11,
+          cursor: hasStats ? "pointer" : "default",
+          boxShadow: isSelected ? "0 0 12px #22c55e44, inset 0 0 20px #22c55e11" : vc ? `0 0 8px ${vc.glow}` : "none",
+          transition: "all 0.2s ease",
+          position: "relative",
+        }}
+      >
+        <div style={{ display: "flex", justifyContent: "space-between", alignItems: "flex-start" }}>
+          <div style={{ fontWeight: 700, color: isSelected ? "#4ade80" : vc ? vc.text : "#ddd", marginBottom: 4 }}>
+            {isSelected && <span style={{ marginRight: 4 }}>▶</span>}
+            {veh.name} <span style={{ color: "#666" }}>x{veh.count}</span>
+          </div>
+          {matchupResult && !isSelected && (
+            <span style={{
+              fontSize: 8, fontWeight: 800, padding: "2px 6px", borderRadius: 3,
+              background: vc.border + "33", color: vc.text, whiteSpace: "nowrap",
+              textTransform: "uppercase", letterSpacing: "0.5px",
+            }}>
+              {matchupResult.verdict === "safe" ? "SAFE" : matchupResult.verdict === "advantage" ? "FAVORABLE" : matchupResult.verdict === "even" ? "EVEN" : matchupResult.verdict === "danger" ? "DANGER" : matchupResult.verdict === "lethal" ? "LETHAL" : "?"}
+            </span>
+          )}
+        </div>
+        {hasStats && (
+          <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "2px 12px", fontSize: 10 }}>
+            <Stat label="HP" value={veh.hp} highlight={veh.hp >= 2000} />
+            <Stat label="Weapon" value={veh.weapon} />
+            <Stat label="Penetration" value={veh.pen} highlight={veh.pen && veh.pen.includes("800")} />
+            <Stat label="Front Armor" value={veh.frontArmor} />
+            <Stat label="Side Armor" value={veh.sideArmor} />
+            <Stat label="Damage/Shot" value={veh.dmgPerShot} highlight={veh.dmgPerShot && veh.dmgPerShot.includes("8000")} />
+          </div>
+        )}
+        {!hasStats && (
+          <div style={{ fontSize: 9, color: "#555", fontStyle: "italic" }}>{"Light vehicle \u2014 no detailed armor stats"}</div>
+        )}
+        {matchupResult && !isSelected && matchupResult.details.length > 0 && (
+          <div style={{ marginTop: 4, borderTop: `1px solid ${vc.border}33`, paddingTop: 4 }}>
+            {matchupResult.details.slice(0, 2).map((d, i) => (
+              <div key={i} style={{ fontSize: 9, color: vc.text + "cc" }}>• {d}</div>
+            ))}
+          </div>
+        )}
+      </div>
+    );
+  };
+
+  return (
+    <div>
+      <div style={{ display: "flex", gap: 16, marginBottom: 24, flexWrap: "wrap", alignItems: "center" }}>
+        <div>
+          <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>FACTION A</label>
+          <select value={factionA} onChange={handleFactionAChange} style={selectStyle}>
+            {Object.entries(FACTIONS).map(([k, f]) => <option key={k} value={k}>{f.name} ({f.abbr})</option>)}
+          </select>
+        </div>
+        <div style={{ fontSize: 24, fontWeight: 900, color: "#555", alignSelf: "flex-end", paddingBottom: 4 }}>VS</div>
+        <div>
+          <label style={{ fontSize: 10, color: "#888", display: "block", marginBottom: 4 }}>FACTION B</label>
+          <select value={factionB} onChange={handleFactionBChange} style={selectStyle}>
+            {Object.entries(FACTIONS).map(([k, f]) => <option key={k} value={k}>{f.name} ({f.abbr})</option>)}
+          </select>
+        </div>
+        {selectedVehicle && (
+          <button onClick={() => setSelectedVehicle(null)} style={{
+            alignSelf: "flex-end", padding: "8px 16px", background: "#222", border: "1px solid #555",
+            color: "#aaa", borderRadius: 4, cursor: "pointer", fontSize: 11, fontFamily: "'JetBrains Mono', monospace",
+          }}>✕ Clear Selection</button>
+        )}
+      </div>
+
+      {/* Selected Vehicle Matchup Panel */}
+      {selVeh && (
+        <div style={{
+          background: "#0f1a0f", border: "1px solid #22c55e44", borderRadius: 8,
+          padding: 16, marginBottom: 24, boxShadow: "0 0 24px #22c55e11",
+        }}>
+          <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 12 }}>
+            <div>
+              <div style={{ fontSize: 10, color: "#888", textTransform: "uppercase" }}>Selected: {myFaction.abbr}</div>
+              <div style={{ fontSize: 16, fontWeight: 800, color: "#4ade80" }}>▶ {selVeh.name}</div>
+              <div style={{ fontSize: 10, color: "#888", marginTop: 2 }}>
+                {selVeh.hp} HP • {selVeh.weapon} • Pen: {selVeh.pen}
+              </div>
+            </div>
+            <div style={{ fontSize: 10, color: "#888", textAlign: "right" }}>
+              vs all {enemyFaction.abbr} combat vehicles ↓
+            </div>
+          </div>
+          <div style={{ fontSize: 10, color: "#666", marginBottom: 10, display: "flex", gap: 12, flexWrap: "wrap" }}>
+            <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: verdictColors.safe.border, marginRight: 4 }}></span>SAFE</span>
+            <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: verdictColors.advantage.border, marginRight: 4 }}></span>FAVORABLE</span>
+            <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: verdictColors.even.border, marginRight: 4 }}></span>EVEN</span>
+            <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: verdictColors.danger.border, marginRight: 4 }}></span>DANGER</span>
+            <span><span style={{ display: "inline-block", width: 10, height: 10, borderRadius: 2, background: verdictColors.lethal.border, marginRight: 4 }}></span>LETHAL</span>
+          </div>
+          <div style={{ display: "grid", gridTemplateColumns: "repeat(auto-fill, minmax(280px, 1fr))", gap: 8 }}>
+            {matchups.map((m, i) => {
+              const vc = verdictColors[m.verdict];
+              return (
+                <div key={i} style={{
+                  background: vc.bg, border: `1px solid ${vc.border}`, borderRadius: 6,
+                  padding: 10, boxShadow: `0 0 8px ${vc.glow}`,
+                }}>
+                  <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center", marginBottom: 6 }}>
+                    <div style={{ fontWeight: 700, color: vc.text, fontSize: 12 }}>{m.enemy.name}</div>
+                    <span style={{
+                      fontSize: 9, fontWeight: 800, padding: "2px 8px", borderRadius: 10,
+                      background: vc.border, color: "#000", textTransform: "uppercase",
+                    }}>{m.label.split("—")[0].trim()}</span>
+                  </div>
+                  <div style={{ fontSize: 10, color: "#aaa", marginBottom: 6 }}>
+                    {m.enemy.category} • {m.enemy.hp || "?"} HP • Pen: {m.enemy.pen || "N/A"}
+                  </div>
+                  <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 4, fontSize: 9, marginBottom: 6 }}>
+                    <div style={{ background: "#00000033", borderRadius: 3, padding: "3px 6px" }}>
+                      <span style={{ color: "#666" }}>You need </span>
+                      <span style={{ color: m.myShotsToKill <= 3 ? "#4ade80" : m.myShotsToKill <= 8 ? "#facc15" : "#f87171", fontWeight: 700 }}>
+                        ~{m.myShotsToKill === 999 ? "∞" : m.myShotsToKill} shots
+                      </span>
+                    </div>
+                    <div style={{ background: "#00000033", borderRadius: 3, padding: "3px 6px" }}>
+                      <span style={{ color: "#666" }}>They need </span>
+                      <span style={{ color: m.theirShotsToKill <= 3 ? "#f87171" : m.theirShotsToKill <= 8 ? "#facc15" : "#4ade80", fontWeight: 700 }}>
+                        ~{m.theirShotsToKill === 999 ? "∞" : m.theirShotsToKill} shots
+                      </span>
+                    </div>
+                  </div>
+                  {m.details.map((d, j) => (
+                    <div key={j} style={{ fontSize: 9, color: vc.text + "bb", paddingLeft: 6, borderLeft: `2px solid ${vc.border}44` }}>
+                      {d}
+                    </div>
+                  ))}
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      )}
+
+      {/* Infantry Role Comparison */}
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16, marginBottom: 24 }}>
+        {[fA, fB].map((f, i) => (
+          <div key={i} style={{ background: "#111", borderRadius: 6, padding: 12, border: `1px solid ${f.accent}33` }}>
+            <h3 style={{ margin: 0, fontSize: 13, color: f.accent, marginBottom: 8 }}>{f.name} {"\u2014"} Infantry Roles ({f.roles.length})</h3>
+            <div style={{ display: "flex", flexWrap: "wrap", gap: 4 }}>
+              {f.roles.map(r => (
+                <span key={r} style={{
+                  fontSize: 10, padding: "2px 6px", background: "#222", borderRadius: 3,
+                  color: (i === 0 ? fB : fA).roles.includes(r) ? "#aaa" : "#4ade80",
+                  border: `1px solid ${(i === 0 ? fB : fA).roles.includes(r) ? "#333" : "#4ade8055"}`
+                }}>{r}</span>
+              ))}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Vehicle Detailed Comparison */}
+      <h3 style={{ fontSize: 14, color: "#ccc", borderBottom: "1px solid #333", paddingBottom: 6, marginBottom: 4 }}>
+        VEHICLE COMBAT COMPARISON
+      </h3>
+      <p style={{ fontSize: 10, color: "#666", margin: "0 0 12px 0" }}>
+        Click any armored vehicle to see matchups against all enemy vehicles above. Enemy vehicles will light up green/yellow/red.
+      </p>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: 16 }}>
+        {[{ f: fA, v: vA, label: fA.abbr, side: "A" }, { f: fB, v: vB, label: fB.abbr, side: "B" }].map(({ f, v, label, side }, idx) => (
+          <div key={idx}>
+            <h4 style={{ fontSize: 12, color: f.accent, margin: "0 0 8px 0" }}>{label} {"\u2014"} {v.length} combat vehicles</h4>
+            {combatCats.map(cat => {
+              const catVs = v.map((veh, i) => ({ ...veh, globalIdx: i })).filter(x => x.category === cat);
+              if (catVs.length === 0) return null;
+              return (
+                <div key={cat} style={{ marginBottom: 12 }}>
+                  <div style={{ fontSize: 10, fontWeight: 700, color: "#666", textTransform: "uppercase", marginBottom: 4 }}>{cat}</div>
+                  {catVs.map((veh) => {
+                    const isSelected = selectedVehicle && selectedVehicle.side === side && selectedVehicle.index === veh.globalIdx;
+                    const matchupResult = getEnemyMatchup(side, veh.globalIdx);
+                    return renderVehicleCard(veh, veh.globalIdx, side, isSelected, matchupResult);
+                  })}
+                </div>
+              );
+            })}
+          </div>
+        ))}
+      </div>
+
+      {/* Threat Matrix */}
+      <h3 style={{ fontSize: 14, color: "#ccc", borderBottom: "1px solid #333", paddingBottom: 6, marginTop: 24, marginBottom: 12 }}>
+        THREAT MATRIX {"\u2014"} Penetration Overview
+      </h3>
+      <ThreatMatrix fA={fA} fB={fB} vA={vA} vB={vB} />
+    </div>
+  );
+}
+
+function Stat({ label, value, highlight }) {
+  return (
+    <div>
+      <span style={{ color: "#666" }}>{label}: </span>
+      <span style={{ color: highlight ? "#ef4444" : "#bbb", fontWeight: highlight ? 700 : 400 }}>{value || "—"}</span>
+    </div>
+  );
+}
+
+function canPenetrate(pen, armor) {
+  if (!pen || pen === "N/A" || !armor) return "unknown";
+  const penVal = parseInt(pen.replace(/[^0-9]/g, ''));
+  const armorVal = parseInt(armor.replace(/[^0-9]/g, ''));
+  if (isNaN(penVal) || isNaN(armorVal)) return "unknown";
+  if (penVal > armorVal * 2) return "easy";
+  if (penVal > armorVal) return "yes";
+  return "no";
+}
+
+function ThreatMatrix({ fA, fB, vA, vB }) {
+  const heavyA = vA.filter(v => v.hp && v.hp >= 1000);
+  const heavyB = vB.filter(v => v.hp && v.hp >= 1000);
+  if (heavyA.length === 0 || heavyB.length === 0) {
+    return <p style={{ color: "#666", fontSize: 11 }}>Not enough armored vehicles for threat matrix.</p>;
+  }
+  return (
+    <div style={{ overflowX: "auto" }}>
+      <table style={{ borderCollapse: "collapse", fontSize: 10, fontFamily: "'JetBrains Mono', monospace" }}>
+        <thead>
+          <tr>
+            <th style={{ ...thStyle, fontSize: 9, background: "#111" }}>
+              {fA.abbr} ↓ vs {fB.abbr} →
+            </th>
+            {heavyB.map((v, i) => (
+              <th key={i} style={{ ...thStyle, fontSize: 9, maxWidth: 80, background: "#111" }}>{v.name}</th>
+            ))}
+          </tr>
+        </thead>
+        <tbody>
+          {heavyA.map((a, i) => (
+            <tr key={i}>
+              <td style={{ ...tdStyle, fontWeight: 700, fontSize: 9, maxWidth: 80 }}>{a.name}</td>
+              {heavyB.map((b, j) => {
+                const result = canPenetrate(a.pen, b.frontArmor);
+                const bgColor = result === "easy" ? "#16a34a22" : result === "yes" ? "#eab30822" : result === "no" ? "#dc262622" : "#33333322";
+                const textColor = result === "easy" ? "#4ade80" : result === "yes" ? "#facc15" : result === "no" ? "#f87171" : "#666";
+                const emoji = result === "easy" ? "penetrates easily" : result === "yes" ? "can penetrate" : result === "no" ? "cannot penetrate" : "?";
+                return (
+                  <td key={j} style={{ ...tdStyle, background: bgColor, color: textColor, textAlign: "center", fontSize: 9 }}>
+                    {emoji}
+                  </td>
+                );
+              })}
+            </tr>
+          ))}
+        </tbody>
+      </table>
+      <div style={{ display: "flex", gap: 12, marginTop: 8, fontSize: 9, color: "#888" }}>
+        <span><span style={{ color: "#4ade80" }}>■</span> Penetrates easily (front)</span>
+        <span><span style={{ color: "#facc15" }}>■</span> Can penetrate (front)</span>
+        <span><span style={{ color: "#f87171" }}>■</span> Cannot penetrate (front)</span>
+      </div>
+    </div>
+  );
+}
+
+const thStyle = {
+  padding: "8px 6px", textAlign: "left", color: "#888", fontSize: 10,
+  borderBottom: "2px solid #333", fontWeight: 700, whiteSpace: "nowrap",
+  textTransform: "uppercase", letterSpacing: "0.5px",
+};
+const tdStyle = { padding: "6px", color: "#ccc", verticalAlign: "top" };
+const selectStyle = {
+  background: "#111", color: "#eee", border: "1px solid #444", borderRadius: 4,
+  padding: "8px 12px", fontSize: 13, fontFamily: "'JetBrains Mono', monospace", minWidth: 220,
+};
+
+function App() {
+  const [tab, setTab] = useState("overview");
+  return (
+    <div style={{
+      background: "#0a0a0a", color: "#ccc", minHeight: "100vh",
+      fontFamily: "'JetBrains Mono', monospace", padding: 16,
+    }}>
+      <div style={{ maxWidth: 1400, margin: "0 auto" }}>
+        <div style={{ borderBottom: "1px solid #333", paddingBottom: 12, marginBottom: 20 }}>
+          <h1 style={{ margin: 0, fontSize: 20, fontWeight: 800, color: "#eee", letterSpacing: "-0.5px" }}>
+            SQUAD <span style={{ color: "#ef4444" }}>FACTION</span> DATABASE
+          </h1>
+          <p style={{ margin: "4px 0 0", fontSize: 11, color: "#666" }}>
+            {"All 17 factions \u2014 vehicles, roles, armor stats & comparison tool"}
+          </p>
+        </div>
+        <div style={{ display: "flex", gap: 0, marginBottom: 20 }}>
+          {[
+            { id: "overview", label: "ALL FACTIONS OVERVIEW" },
+            { id: "compare", label: "FACTION vs FACTION" },
+          ].map(t => (
+            <button key={t.id} onClick={() => setTab(t.id)}
+              style={{
+                padding: "10px 24px", border: "none", cursor: "pointer",
+                fontFamily: "'JetBrains Mono', monospace", fontSize: 12, fontWeight: 700,
+                background: tab === t.id ? "#1e1e1e" : "transparent",
+                color: tab === t.id ? "#ef4444" : "#666",
+                borderBottom: tab === t.id ? "2px solid #ef4444" : "2px solid transparent",
+              }}
+            >{t.label}</button>
+          ))}
+        </div>
+        {tab === "overview" ? <OverviewTab /> : <ComparisonTab />}
+        <div style={{ marginTop: 32, padding: 12, background: "#111", borderRadius: 6, fontSize: 10, color: "#555" }}>
+          <strong style={{ color: "#888" }}>Data Notes:</strong> Stats based on Squad wiki (squad.fandom.com), community guides, and squad-armor.com.
+          Vehicle counts shown are for the Combined Arms unit type. Actual counts vary by layer/unit. Armor values are approximate
+          effective thicknesses. Penetration and damage are base values before angle/distance modifiers. All tanks deal 8000 base damage
+          with APFSDS at close range, reduced with distance. HP values: MBTs = 3000, IFVs = 1250-2000, APCs = 750-1500.
+        </div>
+      </div>
+    </div>
+  );
+}
+
+const root = ReactDOM.createRoot(document.getElementById('root'));
+root.render(React.createElement(App));
+  </script>
+</body>
+</html>
